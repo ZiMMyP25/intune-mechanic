@@ -20,6 +20,14 @@ import {
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
+const BUSINESS = Object.freeze({
+  name: 'In-House Mobile Mechanics',
+  phoneDisplay: '0407 088 849',
+  phoneHref: 'tel:0407088849',
+  email: 'inhousemobilemechanics@gmail.com',
+  licence: 'MVRL62688',
+})
+
 const services = [
   {
     title: 'Scheduled servicing',
@@ -45,18 +53,111 @@ const services = [
   {
     title: 'Breakdown support',
     number: '04',
-    copy: 'When the day goes sideways, Peter brings the workshop to the roadside with calm, capable support.',
+    copy: 'After-hours call-out support may be available by arrangement when the day does not go to plan.',
     image: '/assets/intune-hero.png',
-    detail: '24/7 breakdowns · Pre-purchase inspections',
+    detail: 'Availability varies · Additional charges may apply',
   },
 ]
+
+const carServices = [
+  {
+    number: '01',
+    slug: 'logbook-servicing',
+    title: 'Logbook servicing',
+    summary: 'Scheduled maintenance completed to the manufacturer’s service schedule and specifications, at your home or workplace.',
+    image: '/assets/service-scheduled.png',
+    benefits: ['Schedule-aligned maintenance', 'Quality parts, oils and fluids', 'Service records completed'],
+    note: 'Having your vehicle serviced by an independent qualified repairer does not automatically void your new car warranty. Applicable requirements and manufacturer specifications must be followed.',
+  },
+  {
+    number: '02',
+    slug: 'basic-servicing',
+    title: 'Basic servicing',
+    summary: 'Practical routine maintenance designed around your vehicle’s condition, usage and service history.',
+    image: '/assets/intune-hero.png',
+    benefits: ['Oil and filter service', 'Safety and fluid checks', 'Clear condition report'],
+  },
+  {
+    number: '03',
+    slug: 'pink-slip-esafety-check',
+    title: 'Pink Slip / eSafety Check',
+    summary: 'A convenient mobile roadworthiness inspection with straightforward guidance if an item needs attention.',
+    image: '/assets/service-diagnostics.png',
+    benefits: ['Mobile inspection', 'Clear defect advice', 'Efficient next steps'],
+  },
+  {
+    number: '04',
+    slug: 'pre-purchase-inspections',
+    title: 'Pre-purchase inspections',
+    summary: 'An independent mechanical assessment to help you understand a vehicle before you commit to buying it.',
+    image: '/assets/service-brakes-batteries.png',
+    benefits: ['Mechanical inspection', 'Diagnostic scan where appropriate', 'Plain-English findings'],
+  },
+]
+
+const repairGroups = [
+  {
+    number: '01',
+    title: 'Stopping & control',
+    summary: 'Safety-critical systems inspected and repaired with a focus on predictable, confident road behaviour.',
+    image: '/assets/service-brakes-batteries.png',
+    items: ['Brakes', 'Suspension', 'Steering Repair'],
+  },
+  {
+    number: '02',
+    title: 'Starting & charging',
+    summary: 'Accurate testing across the battery, starter and charging system before replacement parts are recommended.',
+    image: '/assets/service-diagnostics.png',
+    items: ['Battery Replacement', 'Starter Motor', 'Alternator'],
+    featured: true,
+  },
+  {
+    number: '03',
+    title: 'Engine & cooling',
+    summary: 'Preventative and corrective repairs that protect the engine from heat, wear and avoidable breakdowns.',
+    image: '/assets/intune-hero.png',
+    items: ['Drive Belt', 'Cooling System', 'Timing Belt'],
+  },
+  {
+    number: '04',
+    title: 'Fuel & ignition',
+    summary: 'Fault-finding and repairs for systems that affect starting, performance, fuel use and emissions.',
+    image: '/assets/service-scheduled.png',
+    items: ['Fuel System', 'Ignition System', 'Exhaust Repair'],
+  },
+  {
+    number: '05',
+    title: 'Major mechanical',
+    summary: 'Experienced assessment for more involved driveline, engine and comfort-system repairs.',
+    image: '/assets/service-diagnostics.png',
+    items: ['Clutch', 'Air Conditioning', 'Head Gasket / Engine Repair'],
+  },
+]
+
+const infoTopics = [
+  { slug: 'service-on-time', title: 'Why servicing your car on time matters', copy: 'Regular servicing helps identify wear early, maintain efficiency and reduce the chance of a small issue becoming an expensive repair.' },
+  { slug: 'preventative-maintenance', title: 'Why preventative maintenance is important', copy: 'Fluids, filters, belts and safety systems work together. Planned maintenance protects the whole vehicle, not just one component.' },
+  { slug: 'battery-warning-signs', title: 'Warning signs your battery may need replacing', copy: 'Slow cranking, electrical warnings and unreliable starting can point to battery or charging-system trouble. Testing separates the cause from the symptom.' },
+  { slug: 'brake-maintenance', title: 'Why brake maintenance matters', copy: 'Changes in pedal feel, noise, vibration or stopping distance deserve prompt attention. Early inspection can protect adjoining components too.' },
+  { slug: 'logbook-service', title: 'What happens during a logbook service', copy: 'The vehicle is serviced against its scheduled requirements, with the relevant inspections, fluids, parts and service-record updates completed.' },
+  { slug: 'pre-purchase-checks', title: 'What a pre-purchase inspection checks', copy: 'An independent inspection looks at mechanical condition, visible wear, safety items and potential repair needs before purchase.' },
+  { slug: 'vehicle-maintenance-basics', title: 'Basic vehicle maintenance advice', copy: 'Tyre pressures, warning lights, fluid levels and unusual noises are simple checks that help you act before a problem escalates.' },
+]
+
+const bookingServiceOptions = [
+  ...carServices.map((service) => service.title),
+  ...repairGroups.flatMap((group) => group.items),
+  'After-hours call-out',
+]
+
+const vehicleFamilies = ['European', 'Japanese', 'American', 'Chinese', 'Hybrid', 'Other makes & models']
 
 const signalServiceGroups = [
   { title: 'Mechanical repairs', items: ['All mechanical repairs', 'Overheating problems'] },
   { title: 'Log book servicing', items: ['Dealer and log book services', 'Manufacturer warranty protected'] },
   { title: 'Starting & charging', items: ['Batteries', 'Alternators', 'Starter motors'] },
   { title: 'Brakes & clutch', items: ['Brake repairs', 'Clutch repairs', '12-month parts and labour warranty'] },
-  { title: 'Diagnostics & breakdowns', items: ['Engine diagnostic services', '24/7 breakdown service'] },
+  { title: 'Diagnostics & breakdowns', items: ['Engine diagnostic services', 'After-hours support by arrangement'] },
   { title: 'Inspections & compliance', items: ['Mobile pink slips', 'Pre-purchase inspections', 'Fully licensed workshop'] },
 ]
 
@@ -104,7 +205,7 @@ function signalAppointmentDays(monthOffset) {
 }
 
 const reviews = [
-  { quote: 'Peter is professional, tidy and incredibly knowledgeable. It is dealership-level service without leaving home.', name: 'James W.', vehicle: 'Mercedes-Benz C-Class' },
+  { quote: 'Professional, tidy and incredibly knowledgeable. It is dealership-level service without leaving home.', name: 'James W.', vehicle: 'Mercedes-Benz C-Class' },
   { quote: 'Clear advice, excellent work and absolutely no pressure. My car has never felt better.', name: 'Sarah M.', vehicle: 'Subaru Forester' },
   { quote: 'The rare kind of service you recommend without hesitation. Thoughtful from booking to handover.', name: 'Daniel K.', vehicle: 'Audi Q5' },
 ]
@@ -396,22 +497,104 @@ function SignalRedPage({ theme, setTheme }) {
 
 function NightNavigation() {
   const [open, setOpen] = useState(false)
+  const close = () => setOpen(false)
+  const links = [
+    ['Home', '#night-top'],
+    ['Car Services', '#car-services'],
+    ['Car Repairs', '#car-repairs'],
+    ['About Us', '#about'],
+    ['Info Centre', '#info-centre'],
+    ['Contact', '#contact'],
+  ]
+
   return <nav className={`night-nav ${open ? 'is-open' : ''}`}>
-    <div className="night-nav-links"><a href="#night-services">Services</a><a href="#night-story">How it works</a><a className="night-mobile-book" href="#booking">Book service</a></div>
-    <div className="night-nav-actions"><a href="#booking">Book service</a></div>
+    <div className="night-nav-links">{links.map(([label, href]) => <a href={href} onClick={close} key={label}>{label}</a>)}<a className="night-mobile-call" href={BUSINESS.phoneHref} onClick={close}>Call now · {BUSINESS.phoneDisplay}</a><a className="night-mobile-book" href="#booking" onClick={close}>Book service</a></div>
+    <div className="night-nav-actions"><a className="night-nav-call" href={BUSINESS.phoneHref}><Phone size={14} /> Call now</a><a href="#booking">Book service</a></div>
     <button className="night-menu" onClick={() => setOpen(!open)} aria-label="Toggle Night Shift navigation" aria-expanded={open}>{open ? <X size={22} /> : <Menu size={22} />}</button>
   </nav>
+}
+
+function NightCarServices() {
+  return <section className="night-day-services" id="car-services">
+    <div className="night-day-services-head">
+      <div><span>Mobile car services</span><h2>Workshop care.<br /><em>Daylight clear.</em></h2></div>
+      <div><p>Professional servicing and inspections at home or work, with direct communication and no waiting room.</p><a href={BUSINESS.phoneHref}>Talk through your service <ArrowRight size={16} /></a></div>
+    </div>
+    <div className="night-day-service-grid">
+      {carServices.map((service) => <article className="night-day-service-card" id={`service-${service.slug}`} key={service.slug}>
+        <div className="night-day-service-media"><img src={service.image} alt="" loading="lazy" /><span>{service.number}</span></div>
+        <div className="night-day-service-copy">
+          <h3>{service.title}</h3>
+          <p>{service.summary}</p>
+          <ul>{service.benefits.map((benefit) => <li key={benefit}><Check size={14} />{benefit}</li>)}</ul>
+          {service.note && <small>{service.note}</small>}
+          <a href="#booking">Book this service <ArrowDownRight size={16} /></a>
+        </div>
+      </article>)}
+    </div>
+  </section>
+}
+
+function NightCarRepairs() {
+  const [activeRepair, setActiveRepair] = useState(1)
+
+  return <section className="night-services night-repairs" id="car-repairs">
+    <div className="night-section-head"><h2>Car repairs.<br /><em>Made mobile.</em></h2><p>Choose a repair category to open the bay. We test, explain and recommend the right next step before work begins.</p></div>
+    <div className="night-service-rail">{repairGroups.map((group, index) => <article className={`night-service-panel ${group.featured ? 'featured' : ''} ${activeRepair === index ? 'active' : ''}`} key={group.title} onMouseEnter={() => setActiveRepair(index)} onFocus={() => setActiveRepair(index)} onClick={() => setActiveRepair(index)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveRepair(index) } }} tabIndex="0" style={{ '--night-panel-image': `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.9)), url(${group.image})` }}>
+      <span>{group.number}</span><div><h3>{group.title}</h3><p>{group.summary}</p><ul>{group.items.map((item) => <li key={item}>{item}</li>)}</ul><a href="#booking">Request a repair <ArrowRight size={16} /></a></div>
+    </article>)}</div>
+  </section>
+}
+
+function NightBatteryFeature() {
+  return <section className="night-battery-feature" id="battery-replacement">
+    <div className="night-battery-image"><img src="/assets/service-brakes-batteries.png" alt="Battery and charging system testing by a mobile mechanic" loading="lazy" /></div>
+    <div className="night-battery-copy">
+      <span>Featured repair · Battery replacement</span>
+      <h2>A new battery is only half the job.</h2>
+      <p>Modern vehicles may use a Battery Management System. Depending on the make and model, replacement can involve battery registration, relearning, a system reset or adaptation after installation.</p>
+      <p>Using the correct procedure helps the vehicle recognise and manage the replacement battery correctly—and can prevent avoidable charging or battery-life issues.</p>
+      <ul><li>Battery and charging-system testing</li><li>Correct battery specification</li><li>Registration or relearning where required</li></ul>
+      <small>Not every vehicle requires coding or relearning. We assess the requirements for your specific vehicle.</small>
+      <div><a className="night-button red" href={BUSINESS.phoneHref}><Phone size={17} /> Call now</a><a className="night-button outline" href="#booking">Request a quote <ArrowRight size={17} /></a></div>
+    </div>
+  </section>
+}
+
+function NightCapabilityStrip() {
+  return <section className="night-capability" aria-label="Vehicle makes and models serviced">
+    <img src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" loading="lazy" />
+    <div><span>All makes. All models. One standard.</span><p>Servicing and repairs for all makes and models—including European, Japanese, American, Chinese and hybrid vehicles.</p></div>
+    <ul>{vehicleFamilies.map((family) => <li key={family}>{family}</li>)}</ul>
+  </section>
+}
+
+function NightAbout() {
+  return <section className="night-story" id="about">
+    <div className="night-story-heading"><span>About In-House</span><h2>Proper care.<br /><em>Built around you.</em></h2><p>In-House Mobile Mechanics is an owner-operated mobile automotive business focused on professional, reliable mechanical services with a personal approach.</p><a href={BUSINESS.phoneHref}>Speak directly with us <ArrowRight size={16} /></a></div>
+    <div className="night-stack">
+      <article className="night-stack-card image"><img src="/assets/service-diagnostics.png" alt="Professional mobile diagnostic equipment being used on a vehicle" loading="lazy" /><div><strong>Qualified expertise.</strong><span>Your vehicle is serviced by an experienced qualified mechanic.</span></div></article>
+      <article className="night-stack-card bone"><strong>Direct communication.</strong><p>You deal directly with the mechanic working on your vehicle—from the first conversation to the final handover.</p><span>Home or workplace · Clear advice · Meticulous workmanship</span></article>
+      <article className="night-stack-card red"><strong>After-hours call-outs.</strong><p>After-hours call-outs may be available by arrangement. Additional charges may apply depending on time, location and service requirements.</p><a href={BUSINESS.phoneHref}>Arrange a call-out <ArrowDownRight size={18} /></a></article>
+    </div>
+  </section>
+}
+
+function NightInfoCentre() {
+  return <section className="night-info" id="info-centre">
+    <div className="night-info-head"><span>Info Centre</span><h2>Know your car.<br /><em>Choose with confidence.</em></h2><p>Clear automotive guidance, built to help you understand maintenance, warning signs and what good service should include.</p></div>
+    <div className="night-info-list">{infoTopics.map((topic, index) => <article className="night-info-row" id={`info-${topic.slug}`} key={topic.slug}><span>{String(index + 1).padStart(2, '0')}</span><h3>{topic.title}</h3><p>{topic.copy}</p><a href="#contact" aria-label={`Ask us about ${topic.title}`}>Ask us <ArrowRight size={15} /></a></article>)}</div>
+  </section>
 }
 
 function NightShiftPage({ theme, setTheme }) {
   const nightScope = useRef(null)
   const spotlightRef = useRef(null)
-  const [activeService, setActiveService] = useState(0)
   const [reviewIndex, setReviewIndex] = useState(0)
   const [day, setDay] = useState(appointmentDays[1].value)
   const [time, setTime] = useState(appointmentTimes[1])
   const [sent, setSent] = useState(false)
-  const manifesto = 'Great car care should move around your life, not force your life to move around it.'
+  const manifesto = 'Professional car care should move around your life, not force your life to move around it.'
 
   useEffect(() => {
     const spotlight = spotlightRef.current
@@ -428,14 +611,17 @@ function NightShiftPage({ theme, setTheme }) {
     const nightMedia = gsap.matchMedia()
     const intro = gsap.timeline({ defaults: { ease: 'power4.out' } })
     intro.from('.night-nav', { y: -36, opacity: 0, duration: .9 })
-      .from('.night-hero h1, .night-hero-actions, .night-scroll-cue', { y: 42, opacity: 0, duration: .9, stagger: .12 }, '-=.35')
+      .from('.night-hero h1, .night-hero-lede, .night-hero-actions, .night-scroll-cue', { y: 42, opacity: 0, duration: .9, stagger: .12 }, '-=.35')
 
     gsap.to('.night-hero-bg', { scale: 1.1, yPercent: 7, ease: 'none', scrollTrigger: { id: 'night-hero-parallax', trigger: '.night-hero', start: 'top top', end: 'bottom top', scrub: 1 } })
+    gsap.from('.night-day-service-card', { y: 110, opacity: 0, stagger: .1, scrollTrigger: { id: 'night-day-services-in', trigger: '.night-day-service-grid', start: 'top 88%', end: 'top 46%', scrub: 1 } })
     gsap.from('.night-service-panel', { y: 110, rotationX: -10, stagger: .12, scrollTrigger: { id: 'night-services-in', trigger: '.night-service-rail', start: 'top 84%', end: 'top 48%', scrub: 1 } })
+    gsap.from('.night-battery-copy > *', { x: 70, opacity: 0, stagger: .08, scrollTrigger: { id: 'night-battery-in', trigger: '.night-battery-feature', start: 'top 78%', end: 'top 38%', scrub: 1 } })
     gsap.to('.night-manifesto span', { opacity: 1, stagger: .08, scrollTrigger: { id: 'night-words', trigger: '.night-manifesto', start: 'top 78%', end: 'bottom 38%', scrub: 1 } })
     nightMedia.add('(min-width: 901px)', () => ScrollTrigger.create({ id: 'night-story-pin', trigger: '.night-story', start: 'top 90px', end: 'bottom bottom', pin: '.night-story-heading', pinSpacing: false }))
     gsap.utils.toArray('.night-stack-card').forEach((card, index) => gsap.from(card, { y: 170, scale: .86, opacity: .25, rotation: index % 2 ? 3 : -3, scrollTrigger: { id: `night-stack-${index}`, trigger: card, start: 'top 93%', end: 'top 58%', scrub: 1 } }))
     gsap.from('.night-review-inner', { y: 90, opacity: 0, scrollTrigger: { id: 'night-review', trigger: '.night-review', start: 'top 80%', end: 'top 48%', scrub: 1 } })
+    gsap.from('.night-info-row', { y: 55, opacity: 0, stagger: .08, scrollTrigger: { id: 'night-info-in', trigger: '.night-info-list', start: 'top 86%', end: 'top 45%', scrub: 1 } })
     return () => nightMedia.revert()
   }, { scope: nightScope })
 
@@ -448,37 +634,35 @@ function NightShiftPage({ theme, setTheme }) {
       <div className="night-hero-bg" aria-hidden="true" />
       <div className="night-hero-shade" aria-hidden="true" />
       <div className="night-hero-content">
-        <img className="night-hero-logo" src="/assets/inhouse-logo.jpeg" alt="In-House Mobile Mechanics" />
+        <img className="night-hero-logo" src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" />
         <h1>Your workshop.<br />Wherever you stop.</h1>
-        <div className="night-hero-actions"><a className="night-button red" href="#booking">Book In-House <ArrowRight size={18} /></a><a className="night-button outline" href="#night-services">Explore services <ArrowDownRight size={18} /></a></div>
+        <p className="night-hero-lede">Professional mobile servicing and repairs for all makes and models. We come to your home or workplace.</p>
+        <div className="night-hero-actions"><a className="night-button red" href={BUSINESS.phoneHref}><Phone size={17} /> Call now</a><a className="night-button outline" href="#booking">Book a service <ArrowDownRight size={18} /></a></div>
       </div>
-      <a className="night-scroll-cue" href="#night-services">Scroll to discover <ChevronDown size={16} /></a>
+      <a className="night-scroll-cue" href="#car-services">Explore our work <ChevronDown size={16} /></a>
     </header>
 
-    <section className="night-services" id="night-services">
-      <div className="night-section-head"><h2>Certified expertise.<br /><em>Zero disruption.</em></h2><p>Four workshop disciplines. One mobile standard. Hover to open the bay.</p></div>
-      <div className="night-service-rail">{services.map((service, index) => <article className={`night-service-panel ${activeService === index ? 'active' : ''}`} key={service.title} onMouseEnter={() => setActiveService(index)} onFocus={() => setActiveService(index)} tabIndex="0" style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.9)), url(${service.image})` }}><span>{service.number}</span><div><h3>{service.title}</h3><p>{service.copy}</p><a href="#booking">Book this service <ArrowRight size={16} /></a></div></article>)}</div>
-    </section>
+    <NightCarServices />
+    <NightCarRepairs />
+    <NightBatteryFeature />
 
     <section className="night-manifesto-wrap"><p className="night-manifesto">{manifesto.split(' ').map((word, index) => <span key={`${word}-${index}`}>{word} </span>)}</p><div className="night-inline-image"><img src="/assets/service-diagnostics.png" alt="Professional vehicle diagnostics" /></div></section>
 
-    <section className="night-story" id="night-story">
-      <div className="night-story-heading"><h2>The mechanic<br />comes to <em>you.</em></h2><p>Peter brings dealer-level equipment, clear advice and meticulous workmanship to your driveway or workplace.</p><a href="tel:0407088849">Talk to Peter <ArrowRight size={16} /></a></div>
-      <div className="night-stack">
-        <article className="night-stack-card image"><img src="/assets/signal-story-mechanic.png" alt="Peter from In-House Mobile Mechanics" /><div><strong>A familiar face.</strong><span>The same qualified mechanic, every visit.</span></div></article>
-        <article className="night-stack-card bone"><strong>Warranty-safe care.</strong><p>Manufacturer-aligned servicing with genuine or guaranteed new parts.</p><span>12-month parts and labour warranty</span></article>
-        <article className="night-stack-card red"><strong>Straight answers.</strong><p>No waiting-room theatre. No unnecessary upsells. Just a clear diagnosis before work begins.</p><a href="#booking">Choose a time <ArrowDownRight size={18} /></a></article>
-      </div>
-    </section>
+    <NightCapabilityStrip />
+    <NightAbout />
 
     <section className="night-review" id="night-reviews"><div className="night-review-inner"><div className="night-review-nav"><span>Client notes</span><div><button onClick={() => setReviewIndex((reviewIndex + reviews.length - 1) % reviews.length)} aria-label="Previous review"><ArrowLeft size={18} /></button><button onClick={() => setReviewIndex((reviewIndex + 1) % reviews.length)} aria-label="Next review"><ArrowRight size={18} /></button></div></div><blockquote>“{reviews[reviewIndex].quote}”</blockquote><p>{reviews[reviewIndex].name} <span>{reviews[reviewIndex].vehicle}</span></p></div></section>
 
-    <section className="night-booking" id="booking">
-      <div className="night-booking-copy"><h2>Make the<br />workshop come<br />to you.</h2><p>Select a preferred day and time. Peter will confirm the appointment personally.</p></div>
-      {sent ? <div className="night-booking-success"><Check size={34} /><h3>You’re on the list.</h3><p>Peter will confirm {appointmentDays.find((item) => item.value === day)?.date} at {time} shortly.</p><button onClick={() => setSent(false)}>Make another request</button></div> : <form className="night-booking-form" onSubmit={(event) => { event.preventDefault(); setSent(true) }}><div className="night-field-grid"><label>Name<input required placeholder="Full name" /></label><label>Email<input required type="email" placeholder="you@example.com" /></label><label>Vehicle<input required placeholder="Make, model, year" /></label><label>Service<select defaultValue=""><option value="" disabled>Select service</option>{services.map((service) => <option key={service.title}>{service.title}</option>)}</select></label></div><div className="night-picker"><span>Preferred day</span><div>{appointmentDays.map((item) => <button type="button" className={day === item.value ? 'selected' : ''} key={item.value} onClick={() => setDay(item.value)}><small>{item.label}</small><strong>{item.date}</strong></button>)}</div></div><div className="night-picker times"><span>Preferred time</span><div>{appointmentTimes.map((item) => <button type="button" className={time === item ? 'selected' : ''} key={item} onClick={() => setTime(item)}>{item}</button>)}</div></div><button className="night-submit" type="submit">Request the visit <ArrowRight size={18} /></button></form>}
+    <NightInfoCentre />
+
+    <section className="night-booking" id="contact">
+      <span className="night-booking-anchor" id="booking" aria-hidden="true" />
+      <div className="night-booking-copy"><span>Contact In-House</span><h2>Make the<br />workshop come<br />to you.</h2><p>Choose a preferred day and time. We’ll confirm availability, access and what your vehicle needs.</p><div className="night-contact-links"><a href={BUSINESS.phoneHref}><Phone size={16} /> {BUSINESS.phoneDisplay}</a><a href={`mailto:${BUSINESS.email}`}><Mail size={16} /> Email us</a></div><small>After-hours call-outs may be available by arrangement. Additional charges may apply; availability and conditions are confirmed before attendance.</small></div>
+      {sent ? <div className="night-booking-success"><Check size={34} /><h3>Request received.</h3><p>We’ll be in touch to confirm {appointmentDays.find((item) => item.value === day)?.date} at {time}.</p><button onClick={() => setSent(false)}>Make another request</button></div> : <form className="night-booking-form" onSubmit={(event) => { event.preventDefault(); setSent(true) }}><div className="night-field-grid"><label>Name<input required name="name" autoComplete="name" placeholder="Full name" /></label><label>Phone<input required name="phone" type="tel" autoComplete="tel" placeholder="Mobile number" /></label><label>Email<input required name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label><label>Vehicle<input required name="vehicle" placeholder="Make, model, year" /></label><label className="night-field-wide">Service or repair<select name="service" defaultValue=""><option value="" disabled>Select service or repair</option>{bookingServiceOptions.map((option) => <option key={option}>{option}</option>)}</select></label></div><div className="night-picker"><span>Preferred day</span><div>{appointmentDays.map((item) => <button type="button" className={day === item.value ? 'selected' : ''} key={item.value} onClick={() => setDay(item.value)}><small>{item.label}</small><strong>{item.date}</strong></button>)}</div></div><div className="night-picker times"><span>Preferred time</span><div>{appointmentTimes.map((item) => <button type="button" className={time === item ? 'selected' : ''} key={item} onClick={() => setTime(item)}>{item}</button>)}</div></div><button className="night-submit" type="submit">Request the visit <ArrowRight size={18} /></button></form>}
     </section>
 
-    <footer className="night-footer"><img src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" /><div><a href="#night-services">Services</a><a href="#night-story">How it works</a><a href="#booking">Book service</a></div><p>Peter Philippou · MVRL62688 · 0407 088 849</p></footer>
+    <footer className="night-footer"><img src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" /><div><a href="#car-services">Car Services</a><a href="#car-repairs">Car Repairs</a><a href="#about">About Us</a><a href="#info-centre">Info Centre</a><a href="#contact">Contact</a></div><p>{BUSINESS.name} · {BUSINESS.licence} · <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a> · <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p></footer>
+    <a className="night-sticky-call" href={BUSINESS.phoneHref}><Phone size={18} /><span>Call now</span><strong>{BUSINESS.phoneDisplay}</strong></a>
   </main>
 }
 
@@ -486,7 +670,7 @@ export default function App() {
   const scope = useRef(null)
   const [theme, setTheme] = useState(() => {
     const savedTheme = window.localStorage.getItem('inhouse-page-style')
-    return pageStyles.some((style) => style.id === savedTheme) ? savedTheme : 'atelier'
+    return pageStyles.some((style) => style.id === savedTheme) ? savedTheme : 'night'
   })
 
   useEffect(() => {
