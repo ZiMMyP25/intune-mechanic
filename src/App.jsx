@@ -90,7 +90,7 @@ const carServices = [
     slug: 'pre-purchase-inspections',
     title: 'Pre-purchase inspections',
     summary: 'An independent mechanical assessment to help you understand a vehicle before you commit to buying it.',
-    image: '/assets/service-brakes-batteries.png',
+    image: '/assets/service-prepurchase-inspection.png',
     benefits: ['Mechanical inspection', 'Diagnostic scan where appropriate', 'Plain-English findings'],
   },
 ]
@@ -606,10 +606,48 @@ function NightBatteryFeature() {
 }
 
 function NightCapabilityStrip() {
+  const marqueeRef = useRef(null)
+  const marqueeTween = useRef(null)
+
+  useGSAP(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    marqueeTween.current = gsap.to('.night-capability-track', {
+      xPercent: -50,
+      duration: 30,
+      ease: 'none',
+      repeat: -1,
+    })
+
+    return () => {
+      marqueeTween.current = null
+    }
+  }, { scope: marqueeRef })
+
+  const easeMarqueeTo = (timeScale) => {
+    if (!marqueeTween.current) return
+    gsap.to(marqueeTween.current, { timeScale, duration: .7, ease: 'power3.out', overwrite: true })
+  }
+
   return <section className="night-capability" aria-label="Vehicle makes and models serviced">
     <img src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" loading="lazy" />
     <div><span>All makes. All models. One standard.</span><p>Servicing and repairs for all makes and models—including European, Japanese, American, Chinese and hybrid vehicles.</p></div>
-    <ul>{vehicleFamilies.map((family) => <li key={family}>{family}</li>)}</ul>
+    <div
+      className="night-capability-marquee"
+      ref={marqueeRef}
+      onPointerEnter={() => easeMarqueeTo(.18)}
+      onPointerLeave={() => easeMarqueeTo(1)}
+      aria-label="Vehicle categories serviced"
+    >
+      <div className="night-capability-track">
+        {[0, 1].map((loop) => <ul className="night-capability-group" key={loop} aria-hidden={loop === 1}>
+          {vehicleFamilies.map((family, index) => <li className="night-capability-item" key={`${loop}-${family}`}>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            {family}
+          </li>)}
+        </ul>)}
+      </div>
+    </div>
   </section>
 }
 
