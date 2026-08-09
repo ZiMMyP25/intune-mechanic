@@ -140,7 +140,7 @@ const infoTopics = [
   { slug: 'battery-warning-signs', title: 'Warning signs your battery may need replacing', copy: 'Slow cranking, electrical warnings and unreliable starting can point to battery or charging-system trouble. Testing separates the cause from the symptom.' },
   { slug: 'brake-maintenance', title: 'Why brake maintenance matters', copy: 'Changes in pedal feel, noise, vibration or stopping distance deserve prompt attention. Early inspection can protect adjoining components too.' },
   { slug: 'logbook-service', title: 'What happens during a logbook service', copy: 'The vehicle is serviced against its scheduled requirements, with the relevant inspections, fluids, parts and service-record updates completed.' },
-  { slug: 'pre-purchase-checks', title: 'What a pre-purchase inspection checks', copy: 'An independent inspection looks at mechanical condition, visible wear, safety items and potential repair needs before purchase.' },
+  { slug: 'pre-purchase-checks', title: 'What are pre-purchase inspection checks?', copy: 'An independent inspection looks at mechanical condition, visible wear, safety items and potential repair needs before purchase.' },
   { slug: 'vehicle-maintenance-basics', title: 'Basic vehicle maintenance advice', copy: 'Tyre pressures, warning lights, fluid levels and unusual noises are simple checks that help you act before a problem escalates.' },
 ]
 
@@ -182,6 +182,50 @@ const appointmentTimes = ['8:00 am', '9:30 am', '11:00 am', '1:00 pm', '3:30 pm'
 const appointmentMonthLabel = new Intl.DateTimeFormat('en-AU', { month: 'long', year: 'numeric' })
 const appointmentWeekdayLabel = new Intl.DateTimeFormat('en-AU', { weekday: 'short' })
 const appointmentShortMonthLabel = new Intl.DateTimeFormat('en-AU', { month: 'short' })
+const appointmentFullDateLabel = new Intl.DateTimeFormat('en-AU', { weekday: 'short', day: 'numeric', month: 'long' })
+
+function nightBookingWeeks(monthOffset) {
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const monthStart = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1)
+  const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0)
+  const weeks = []
+  let currentWeekKey = ''
+
+  for (let dayNumber = 1; dayNumber <= monthEnd.getDate(); dayNumber += 1) {
+    const date = new Date(monthStart.getFullYear(), monthStart.getMonth(), dayNumber)
+    if (date < today || date.getDay() === 0) continue
+
+    const monday = new Date(date)
+    monday.setDate(date.getDate() - ((date.getDay() + 6) % 7))
+    const weekKey = `${monday.getFullYear()}-${monday.getMonth()}-${monday.getDate()}`
+
+    if (weekKey !== currentWeekKey) {
+      weeks.push({ id: weekKey, days: [] })
+      currentWeekKey = weekKey
+    }
+
+    weeks[weeks.length - 1].days.push({
+      label: appointmentWeekdayLabel.format(date),
+      date: `${date.getDate()} ${appointmentShortMonthLabel.format(date)}`,
+      fullDate: appointmentFullDateLabel.format(date),
+      value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
+    })
+  }
+
+  return weeks.map((week) => ({
+    ...week,
+    range: `${week.days[0].date.split(' ')[0]}–${week.days[week.days.length - 1].date}`,
+  }))
+}
+
+function nightBookingDateLabel(value) {
+  if (!value) return 'your selected date'
+  const [year, month, day] = value.split('-').map(Number)
+  return appointmentFullDateLabel.format(new Date(year, month - 1, day))
+}
+
+const initialNightBookingDay = nightBookingWeeks(0)[0]?.days[0]?.value || ''
 
 function signalAppointmentDays(monthOffset) {
   const now = new Date()
@@ -205,7 +249,7 @@ function signalAppointmentDays(monthOffset) {
 }
 
 const reviews = [
-  { quote: 'Professional, tidy and incredibly knowledgeable. It is dealership-level service without leaving home.', name: 'James W.', vehicle: 'Mercedes-Benz C-Class' },
+  { quote: 'Professional, tidy and incredibly knowledgeable. It is dealership-level service without leaving home.', name: 'James P.', vehicle: 'Volkswagon Golf GTI' },
   { quote: 'Clear advice, excellent work and absolutely no pressure. My car has never felt better.', name: 'Sarah M.', vehicle: 'Subaru Forester' },
   { quote: 'The rare kind of service you recommend without hesitation. Thoughtful from booking to handover.', name: 'Daniel K.', vehicle: 'Audi Q5' },
 ]
@@ -574,7 +618,7 @@ function NightAbout() {
     <div className="night-story-heading"><span>About In-House</span><h2>Proper care.<br /><em>Built around you.</em></h2><p>In-House Mobile Mechanics is an owner-operated mobile automotive business focused on professional, reliable mechanical services with a personal approach.</p><a href={BUSINESS.phoneHref}>Speak directly with us <ArrowRight size={16} /></a></div>
     <div className="night-stack">
       <article className="night-stack-card image"><img src="/assets/service-diagnostics.png" alt="Professional mobile diagnostic equipment being used on a vehicle" loading="lazy" /><div><strong>Qualified expertise.</strong><span>Your vehicle is serviced by an experienced qualified mechanic.</span></div></article>
-      <article className="night-stack-card bone"><strong>Direct communication.</strong><p>You deal directly with the mechanic working on your vehicle—from the first conversation to the final handover.</p><span>Home or workplace · Clear advice · Meticulous workmanship</span></article>
+      <article className="night-stack-card bone"><strong>Direct communication.</strong><p>You deal directly with the mechanic working on your vehicle. From the first conversation to the final handover.</p><span>Home or workplace · Clear advice · Meticulous workmanship</span></article>
       <article className="night-stack-card red"><strong>After-hours call-outs.</strong><p>After-hours call-outs may be available by arrangement. Additional charges may apply depending on time, location and service requirements.</p><a href={BUSINESS.phoneHref}>Arrange a call-out <ArrowDownRight size={18} /></a></article>
     </div>
   </section>
@@ -587,11 +631,61 @@ function NightInfoCentre() {
   </section>
 }
 
+function NightDatePicker({ selectedDay, onDayChange }) {
+  const calendarScope = useRef(null)
+  const [monthOffset, setMonthOffset] = useState(0)
+  const [weekIndex, setWeekIndex] = useState(0)
+  const weeks = useMemo(() => nightBookingWeeks(monthOffset), [monthOffset])
+  const selectedWeek = weeks[weekIndex] || weeks[0]
+  const selectedMonth = useMemo(() => {
+    const now = new Date()
+    return new Date(now.getFullYear(), now.getMonth() + monthOffset, 1)
+  }, [monthOffset])
+
+  useGSAP(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.fromTo('.night-week-stage', { y: 10, opacity: .35 }, { y: 0, opacity: 1, duration: .42, ease: 'power3.out' })
+  }, { scope: calendarScope, dependencies: [monthOffset, weekIndex], revertOnUpdate: true })
+
+  const changeMonth = (direction) => {
+    const nextOffset = Math.min(11, Math.max(0, monthOffset + direction))
+    const nextWeeks = nightBookingWeeks(nextOffset)
+    setMonthOffset(nextOffset)
+    setWeekIndex(0)
+    onDayChange(nextWeeks[0]?.days[0]?.value || '')
+  }
+
+  const changeWeek = (direction) => {
+    const nextIndex = Math.min(weeks.length - 1, Math.max(0, weekIndex + direction))
+    setWeekIndex(nextIndex)
+    onDayChange(weeks[nextIndex]?.days[0]?.value || '')
+  }
+
+  return <div className="night-picker night-date-picker" ref={calendarScope}>
+    <div className="night-calendar-head">
+      <span>Preferred day</span>
+      <div className="night-month-control">
+        <button type="button" onClick={() => changeMonth(-1)} disabled={monthOffset === 0} aria-label="Previous month"><ArrowLeft size={15} /></button>
+        <strong>{appointmentMonthLabel.format(selectedMonth)}</strong>
+        <button type="button" onClick={() => changeMonth(1)} disabled={monthOffset === 11} aria-label="Next month"><ArrowRight size={15} /></button>
+      </div>
+    </div>
+    {selectedWeek ? <div className="night-week-stage">
+      <div className="night-week-control">
+        <button type="button" onClick={() => changeWeek(-1)} disabled={weekIndex === 0} aria-label="Previous week"><ArrowLeft size={15} /></button>
+        <div><small>Week {weekIndex + 1} of {weeks.length}</small><strong>{selectedWeek.range}</strong></div>
+        <button type="button" onClick={() => changeWeek(1)} disabled={weekIndex === weeks.length - 1} aria-label="Next week"><ArrowRight size={15} /></button>
+      </div>
+      <div className="night-date-options">{selectedWeek.days.map((item) => <button type="button" className={selectedDay === item.value ? 'selected' : ''} key={item.value} onClick={() => onDayChange(item.value)} aria-label={item.fullDate}><small>{item.label}</small><strong>{item.date}</strong></button>)}</div>
+    </div> : <div className="night-calendar-empty"><CalendarDays size={18} /><span>No remaining dates this month. Choose the next month to continue.</span></div>}
+  </div>
+}
+
 function NightShiftPage({ theme, setTheme }) {
   const nightScope = useRef(null)
   const spotlightRef = useRef(null)
   const [reviewIndex, setReviewIndex] = useState(0)
-  const [day, setDay] = useState(appointmentDays[1].value)
+  const [day, setDay] = useState(initialNightBookingDay)
   const [time, setTime] = useState(appointmentTimes[1])
   const [sent, setSent] = useState(false)
   const manifesto = 'Professional car care should move around your life, not force your life to move around it.'
@@ -658,7 +752,7 @@ function NightShiftPage({ theme, setTheme }) {
     <section className="night-booking" id="contact">
       <span className="night-booking-anchor" id="booking" aria-hidden="true" />
       <div className="night-booking-copy"><span>Contact In-House</span><h2>Make the<br />workshop come<br />to you.</h2><p>Choose a preferred day and time. We’ll confirm availability, access and what your vehicle needs.</p><div className="night-contact-links"><a href={BUSINESS.phoneHref}><Phone size={16} /> {BUSINESS.phoneDisplay}</a><a href={`mailto:${BUSINESS.email}`}><Mail size={16} /> Email us</a></div><small>After-hours call-outs may be available by arrangement. Additional charges may apply; availability and conditions are confirmed before attendance.</small></div>
-      {sent ? <div className="night-booking-success"><Check size={34} /><h3>Request received.</h3><p>We’ll be in touch to confirm {appointmentDays.find((item) => item.value === day)?.date} at {time}.</p><button onClick={() => setSent(false)}>Make another request</button></div> : <form className="night-booking-form" onSubmit={(event) => { event.preventDefault(); setSent(true) }}><div className="night-field-grid"><label>Name<input required name="name" autoComplete="name" placeholder="Full name" /></label><label>Phone<input required name="phone" type="tel" autoComplete="tel" placeholder="Mobile number" /></label><label>Email<input required name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label><label>Vehicle<input required name="vehicle" placeholder="Make, model, year" /></label><label className="night-field-wide">Service or repair<select name="service" defaultValue=""><option value="" disabled>Select service or repair</option>{bookingServiceOptions.map((option) => <option key={option}>{option}</option>)}</select></label></div><div className="night-picker"><span>Preferred day</span><div>{appointmentDays.map((item) => <button type="button" className={day === item.value ? 'selected' : ''} key={item.value} onClick={() => setDay(item.value)}><small>{item.label}</small><strong>{item.date}</strong></button>)}</div></div><div className="night-picker times"><span>Preferred time</span><div>{appointmentTimes.map((item) => <button type="button" className={time === item ? 'selected' : ''} key={item} onClick={() => setTime(item)}>{item}</button>)}</div></div><button className="night-submit" type="submit">Request the visit <ArrowRight size={18} /></button></form>}
+      {sent ? <div className="night-booking-success"><Check size={34} /><h3>Request received.</h3><p>We’ll be in touch to confirm {nightBookingDateLabel(day)} at {time}.</p><button onClick={() => setSent(false)}>Make another request</button></div> : <form className="night-booking-form" onSubmit={(event) => { event.preventDefault(); setSent(true) }}><div className="night-field-grid"><label>Name<input required name="name" autoComplete="name" placeholder="Full name" /></label><label>Phone<input required name="phone" type="tel" autoComplete="tel" placeholder="Mobile number" /></label><label>Email<input required name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label><label>Vehicle<input required name="vehicle" placeholder="Make, model, year" /></label><label className="night-field-wide">Service or repair<select name="service" defaultValue=""><option value="" disabled>Select service or repair</option>{bookingServiceOptions.map((option) => <option key={option}>{option}</option>)}</select></label></div><input type="hidden" name="preferred-date" value={day} /><input type="hidden" name="preferred-time" value={time} /><NightDatePicker selectedDay={day} onDayChange={setDay} /><div className="night-picker times"><span>Preferred time</span><div>{appointmentTimes.map((item) => <button type="button" className={time === item ? 'selected' : ''} key={item} onClick={() => setTime(item)}>{item}</button>)}</div></div><button className="night-submit" type="submit" disabled={!day}>Request the visit <ArrowRight size={18} /></button></form>}
     </section>
 
     <footer className="night-footer"><img src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" /><div><a href="#car-services">Car Services</a><a href="#car-repairs">Car Repairs</a><a href="#about">About Us</a><a href="#info-centre">Info Centre</a><a href="#contact">Contact</a></div><p>{BUSINESS.name} · {BUSINESS.licence} · <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a> · <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p></footer>
