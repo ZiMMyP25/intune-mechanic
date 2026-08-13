@@ -33,7 +33,7 @@ const services = [
     title: 'Scheduled servicing',
     number: '01',
     copy: 'Manufacturer-aligned maintenance using genuine or guaranteed new parts, completed at your home or workplace.',
-    image: '/assets/service-scheduled.png',
+    image: '/assets/service-day-maintenance.png',
     detail: 'Log book servicing · Warranty-safe care',
   },
   {
@@ -47,7 +47,7 @@ const services = [
     title: 'Brakes & batteries',
     number: '03',
     copy: 'Safety-critical systems inspected, tested and restored with meticulous attention to the details that matter.',
-    image: '/assets/service-brakes-batteries.png',
+    image: '/assets/service-brakes-complete.png',
     detail: 'Brakes · Clutches · Starting & charging',
   },
   {
@@ -65,7 +65,7 @@ const carServices = [
     slug: 'logbook-servicing',
     title: 'Logbook servicing',
     summary: 'Scheduled maintenance completed to the manufacturer’s service schedule and specifications, at your home or workplace.',
-    image: '/assets/service-scheduled.png',
+    image: '/assets/service-day-maintenance.png',
     benefits: ['Schedule-aligned maintenance', 'Quality parts, oils and fluids', 'Service records completed'],
     note: 'Having your vehicle serviced by an independent qualified repairer does not automatically void your new car warranty. Applicable requirements and manufacturer specifications must be followed.',
   },
@@ -74,7 +74,7 @@ const carServices = [
     slug: 'basic-servicing',
     title: 'Basic servicing',
     summary: 'Practical routine maintenance designed around your vehicle’s condition, usage and service history.',
-    image: '/assets/intune-hero.png',
+    image: '/assets/service-day-basic.png',
     benefits: ['Oil and filter service', 'Safety and fluid checks', 'Clear condition report'],
   },
   {
@@ -82,8 +82,9 @@ const carServices = [
     slug: 'pink-slip-esafety-check',
     title: 'Pink Slip / eSafety Check',
     summary: 'A convenient mobile roadworthiness inspection with straightforward guidance if an item needs attention.',
-    image: '/assets/service-diagnostics.png',
+    image: '/assets/service-day-brakes-inspection.png',
     benefits: ['Mobile inspection', 'Clear defect advice', 'Efficient next steps'],
+    callout: "Simply tell us you want a 'pink-slip' inspection whenever you book a service or repair.",
   },
   {
     number: '04',
@@ -100,36 +101,36 @@ const repairGroups = [
     number: '01',
     title: 'Stopping & control',
     summary: 'Safety-critical systems inspected and repaired with a focus on predictable, confident road behaviour.',
-    image: '/assets/service-brakes-batteries.png',
+    image: '/assets/service-brakes-complete.png',
     items: ['Brakes', 'Suspension', 'Steering Repair'],
   },
   {
     number: '02',
     title: 'Starting & charging',
-    summary: 'Accurate testing across the battery, starter and charging system before replacement parts are recommended.',
-    image: '/assets/service-diagnostics.png',
-    items: ['Battery Replacement', 'Starter Motor', 'Alternator'],
+    summary: 'We test the battery and charging system, confirm the correct replacement, then register or relearn the Battery Management System where required to protect charging performance and battery life.',
+    image: '/assets/service-battery-charging-voltage-clips.png',
+    items: ['Battery & charging test', 'Correct battery specification', 'Registration / relearning where required'],
     featured: true,
   },
   {
     number: '03',
     title: 'Engine & cooling',
     summary: 'Preventative and corrective repairs that protect the engine from heat, wear and avoidable breakdowns.',
-    image: '/assets/intune-hero.png',
+    image: '/assets/service-engine-cooling-radiator.png',
     items: ['Drive Belt', 'Cooling System', 'Timing Belt'],
   },
   {
     number: '04',
     title: 'Fuel & ignition',
     summary: 'Fault-finding and repairs for systems that affect starting, performance, fuel use and emissions.',
-    image: '/assets/service-scheduled.png',
+    image: '/assets/service-diagnostics.png',
     items: ['Fuel System', 'Ignition System', 'Exhaust Repair'],
   },
   {
     number: '05',
     title: 'Major mechanical',
     summary: 'Experienced assessment for more involved driveline, engine and comfort-system repairs.',
-    image: '/assets/service-diagnostics.png',
+    image: '/assets/service-major-mechanical-clutch.png',
     items: ['Clutch', 'Air Conditioning', 'Head Gasket / Engine Repair'],
   },
 ]
@@ -547,31 +548,44 @@ function NightNavigation() {
     ['Car Services', '#car-services'],
     ['Car Repairs', '#car-repairs'],
     ['About Us', '#about'],
-    ['Info Centre', '#info-centre'],
+    ['FAQ', '#info-centre'],
     ['Contact', '#contact'],
+    ['Offers', '#contact'],
   ]
 
   return <nav className={`night-nav ${open ? 'is-open' : ''}`}>
-    <div className="night-nav-links">{links.map(([label, href]) => <a href={href} onClick={close} key={label}>{label}</a>)}<a className="night-mobile-call" href={BUSINESS.phoneHref} onClick={close}>Call now · {BUSINESS.phoneDisplay}</a><a className="night-mobile-book" href="#booking" onClick={close}>Book service</a></div>
+    <div className="night-nav-links">{links.map(([label, href]) => <a className={label === 'Offers' ? 'night-nav-offers' : undefined} href={href} onClick={close} key={label}>{label}</a>)}<a className="night-mobile-call" href={BUSINESS.phoneHref} onClick={close}>Call now · {BUSINESS.phoneDisplay}</a><a className="night-mobile-book" href="#booking" onClick={close}>Book service</a></div>
     <div className="night-nav-actions"><a className="night-nav-call" href={BUSINESS.phoneHref}><Phone size={14} /> Call now</a><a href="#booking">Book service</a></div>
     <button className="night-menu" onClick={() => setOpen(!open)} aria-label="Toggle Night Shift navigation" aria-expanded={open}>{open ? <X size={22} /> : <Menu size={22} />}</button>
   </nav>
 }
 
+function NightCapabilityStatement() {
+  return <section className="night-day-services-standard" aria-labelledby="night-capability-heading">
+    <div className="night-day-services-standard-inner">
+      <h2 id="night-capability-heading"><span>All makes. All models</span><span>One standard</span></h2>
+      <p>Servicing and repairs for all makes and models—including European, Japanese, American, Chinese and hybrid vehicles.</p>
+    </div>
+  </section>
+}
+
 function NightCarServices() {
+  const [activeService, setActiveService] = useState(0)
+
   return <section className="night-day-services" id="car-services">
     <div className="night-day-services-head">
-      <div><span>Mobile car services</span><h2>Workshop care.<br /><em>Daylight clear.</em></h2></div>
+      <div><span>Car Services</span><h2>Workshop care.<br /><em>Mobile Convenience.</em></h2></div>
       <div><p>Professional servicing and inspections at home or work, with direct communication and no waiting room.</p><a href={BUSINESS.phoneHref}>Talk through your service <ArrowRight size={16} /></a></div>
     </div>
-    <div className="night-day-service-grid">
-      {carServices.map((service) => <article className="night-day-service-card" id={`service-${service.slug}`} key={service.slug}>
-        <div className="night-day-service-media"><img src={service.image} alt="" loading="lazy" /><span>{service.number}</span></div>
-        <div className="night-day-service-copy">
+    <div className="night-service-rail night-day-service-rail">
+      {carServices.map((service, index) => <article className={`night-service-panel night-day-service-panel ${activeService === index ? 'active' : ''}`} id={`service-${service.slug}`} key={service.slug} onMouseEnter={() => setActiveService(index)} onFocus={() => setActiveService(index)} onClick={() => setActiveService(index)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveService(index) } }} tabIndex="0" style={{ '--night-panel-image': `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.9)), url(${service.image})` }}>
+        <span>{service.number}</span>
+        <div>
           <h3>{service.title}</h3>
           <p>{service.summary}</p>
           <ul>{service.benefits.map((benefit) => <li key={benefit}><Check size={14} />{benefit}</li>)}</ul>
-          {service.note && <small>{service.note}</small>}
+          {service.callout && <div className="night-day-service-callout"><ShieldCheck size={18} /><p>{service.callout}</p></div>}
+          {service.note && <small className="night-day-service-note">{service.note}</small>}
           <a href="#booking">Book this service <ArrowDownRight size={16} /></a>
         </div>
       </article>)}
@@ -587,21 +601,6 @@ function NightCarRepairs() {
     <div className="night-service-rail">{repairGroups.map((group, index) => <article className={`night-service-panel ${group.featured ? 'featured' : ''} ${activeRepair === index ? 'active' : ''}`} key={group.title} onMouseEnter={() => setActiveRepair(index)} onFocus={() => setActiveRepair(index)} onClick={() => setActiveRepair(index)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveRepair(index) } }} tabIndex="0" style={{ '--night-panel-image': `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.9)), url(${group.image})` }}>
       <span>{group.number}</span><div><h3>{group.title}</h3><p>{group.summary}</p><ul>{group.items.map((item) => <li key={item}>{item}</li>)}</ul><a href="#booking">Request a repair <ArrowRight size={16} /></a></div>
     </article>)}</div>
-  </section>
-}
-
-function NightBatteryFeature() {
-  return <section className="night-battery-feature" id="battery-replacement">
-    <div className="night-battery-image"><img src="/assets/service-brakes-batteries.png" alt="Battery and charging system testing by a mobile mechanic" loading="lazy" /></div>
-    <div className="night-battery-copy">
-      <span>Featured repair · Battery replacement</span>
-      <h2>A new battery is only half the job.</h2>
-      <p>Modern vehicles may use a Battery Management System. Depending on the make and model, replacement can involve battery registration, relearning, a system reset or adaptation after installation.</p>
-      <p>Using the correct procedure helps the vehicle recognise and manage the replacement battery correctly—and can prevent avoidable charging or battery-life issues.</p>
-      <ul><li>Battery and charging-system testing</li><li>Correct battery specification</li><li>Registration or relearning where required</li></ul>
-      <small>Not every vehicle requires coding or relearning. We assess the requirements for your specific vehicle.</small>
-      <div><a className="night-button red" href={BUSINESS.phoneHref}><Phone size={17} /> Call now</a><a className="night-button outline" href="#booking">Request a quote <ArrowRight size={17} /></a></div>
-    </div>
   </section>
 }
 
@@ -653,7 +652,7 @@ function NightCapabilityStrip() {
 
 function NightAbout() {
   return <section className="night-story" id="about">
-    <div className="night-story-heading"><span>About In-House</span><h2>Proper care.<br /><em>Built around you.</em></h2><p>In-House Mobile Mechanics is an owner-operated mobile automotive business focused on professional, reliable mechanical services with a personal approach.</p><a href={BUSINESS.phoneHref}>Speak directly with us <ArrowRight size={16} /></a></div>
+    <div className="night-story-heading"><span>About Us</span><h2>Proper care.<br /><em>Built around you.</em></h2><p>In-House Mobile Mechanics is an owner-operated mobile automotive business focused on professional, reliable mechanical services with a personal approach.</p><a href={BUSINESS.phoneHref}>Speak directly with us <ArrowRight size={16} /></a></div>
     <div className="night-stack">
       <article className="night-stack-card image"><img src="/assets/service-diagnostics.png" alt="Professional mobile diagnostic equipment being used on a vehicle" loading="lazy" /><div><strong>Qualified expertise.</strong><span>Your vehicle is serviced by an experienced qualified mechanic.</span></div></article>
       <article className="night-stack-card bone"><strong>Direct communication.</strong><p>You deal directly with the mechanic working on your vehicle. From the first conversation to the final handover.</p><span>Home or workplace · Clear advice · Meticulous workmanship</span></article>
@@ -664,7 +663,7 @@ function NightAbout() {
 
 function NightInfoCentre() {
   return <section className="night-info" id="info-centre">
-    <div className="night-info-head"><span>Info Centre</span><h2>Know your car.<br /><em>Choose with confidence.</em></h2><p>Clear automotive guidance, built to help you understand maintenance, warning signs and what good service should include.</p></div>
+    <div className="night-info-head"><span>Frequently Asked Questions</span><h2>Know your car.<br /><em>Choose with confidence.</em></h2><p>Clear automotive guidance, built to help you understand maintenance, warning signs and what good service should include.</p></div>
     <div className="night-info-list">{infoTopics.map((topic, index) => <article className="night-info-row" id={`info-${topic.slug}`} key={topic.slug}><span>{String(index + 1).padStart(2, '0')}</span><h3>{topic.title}</h3><p>{topic.copy}</p><a href="#contact" aria-label={`Ask us about ${topic.title}`}>Ask us <ArrowRight size={15} /></a></article>)}</div>
   </section>
 }
@@ -746,9 +745,7 @@ function NightShiftPage({ theme, setTheme }) {
       .from('.night-hero h1, .night-hero-lede, .night-hero-actions, .night-scroll-cue', { y: 42, opacity: 0, duration: .9, stagger: .12 }, '-=.35')
 
     gsap.to('.night-hero-bg', { scale: 1.1, yPercent: 7, ease: 'none', scrollTrigger: { id: 'night-hero-parallax', trigger: '.night-hero', start: 'top top', end: 'bottom top', scrub: 1 } })
-    gsap.from('.night-day-service-card', { y: 110, opacity: 0, stagger: .1, scrollTrigger: { id: 'night-day-services-in', trigger: '.night-day-service-grid', start: 'top 88%', end: 'top 46%', scrub: 1 } })
-    gsap.from('.night-service-panel', { y: 110, rotationX: -10, stagger: .12, scrollTrigger: { id: 'night-services-in', trigger: '.night-service-rail', start: 'top 84%', end: 'top 48%', scrub: 1 } })
-    gsap.from('.night-battery-copy > *', { x: 70, opacity: 0, stagger: .08, scrollTrigger: { id: 'night-battery-in', trigger: '.night-battery-feature', start: 'top 78%', end: 'top 38%', scrub: 1 } })
+    gsap.from('.night-repairs .night-service-panel', { y: 110, rotationX: -10, stagger: .12, scrollTrigger: { id: 'night-services-in', trigger: '.night-repairs .night-service-rail', start: 'top 84%', end: 'top 48%', scrub: 1 } })
     gsap.to('.night-manifesto span', { opacity: 1, stagger: .08, scrollTrigger: { id: 'night-words', trigger: '.night-manifesto', start: 'top 78%', end: 'bottom 38%', scrub: 1 } })
     nightMedia.add('(min-width: 901px)', () => ScrollTrigger.create({ id: 'night-story-pin', trigger: '.night-story', start: 'top 90px', end: 'bottom bottom', pin: '.night-story-heading', pinSpacing: false }))
     gsap.utils.toArray('.night-stack-card').forEach((card, index) => gsap.from(card, { y: 170, scale: .86, opacity: .25, rotation: index % 2 ? 3 : -3, scrollTrigger: { id: `night-stack-${index}`, trigger: card, start: 'top 93%', end: 'top 58%', scrub: 1 } }))
@@ -774,13 +771,12 @@ function NightShiftPage({ theme, setTheme }) {
       <a className="night-scroll-cue" href="#car-services">Explore our work <ChevronDown size={16} /></a>
     </header>
 
+    <NightCapabilityStatement />
     <NightCarServices />
     <NightCarRepairs />
-    <NightBatteryFeature />
 
-    <section className="night-manifesto-wrap"><p className="night-manifesto">{manifesto.split(' ').map((word, index) => <span key={`${word}-${index}`}>{word} </span>)}</p><div className="night-inline-image"><img src="/assets/service-diagnostics.png" alt="Professional vehicle diagnostics" /></div></section>
+    <section className="night-manifesto-wrap"><p className="night-manifesto">{manifesto.split(' ').map((word, index) => <span key={`${word}-${index}`}>{word} </span>)}</p></section>
 
-    <NightCapabilityStrip />
     <NightAbout />
 
     <section className="night-review" id="night-reviews"><div className="night-review-inner"><div className="night-review-nav"><span>Client notes</span><div><button onClick={() => setReviewIndex((reviewIndex + reviews.length - 1) % reviews.length)} aria-label="Previous review"><ArrowLeft size={18} /></button><button onClick={() => setReviewIndex((reviewIndex + 1) % reviews.length)} aria-label="Next review"><ArrowRight size={18} /></button></div></div><blockquote>“{reviews[reviewIndex].quote}”</blockquote><p>{reviews[reviewIndex].name} <span>{reviews[reviewIndex].vehicle}</span></p></div></section>

@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readdir, rename } from 'node:fs/promises'
+import { copyFile, cp, mkdir, readdir, rename } from 'node:fs/promises'
 
 const distDirectory = new URL('../dist/', import.meta.url)
 const clientDirectory = new URL('../dist/client/', import.meta.url)
@@ -18,3 +18,7 @@ await copyFile(
   new URL('../worker/index.js', import.meta.url),
   new URL('../dist/server/index.js', import.meta.url),
 )
+
+await mkdir(new URL('../dist/.openai/', import.meta.url), { recursive: true })
+await copyFile(new URL('../.openai/hosting.json', import.meta.url), new URL('../dist/.openai/hosting.json', import.meta.url))
+await cp(new URL('../.openai/drizzle/', import.meta.url), new URL('../dist/.openai/drizzle/', import.meta.url), { recursive: true })

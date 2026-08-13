@@ -214,42 +214,52 @@
 .night-page{scroll-padding-top:78px}
 .night-nav{position:fixed;grid-template-columns:minmax(0,1fr) auto;gap:28px;background:linear-gradient(180deg,rgba(3,3,3,.84),rgba(3,3,3,.32));backdrop-filter:blur(8px)}
 .night-nav-links{min-width:0;gap:clamp(14px,1.8vw,30px)}
-.night-nav-links a{white-space:nowrap;font-size:clamp(8px,.68vw,10px)}
+.night-nav-links a{white-space:nowrap;font-size:13px}
 .night-nav-actions{grid-column:2;align-items:center;gap:24px}
-.night-nav-actions a{min-height:44px;display:inline-flex;align-items:center;gap:8px}
+.night-nav-actions a{min-height:44px;display:inline-flex;align-items:center;gap:8px;font-size:13px}
 .night-nav-actions .night-nav-call{color:var(--night-red)}
+.night-nav-links .night-nav-offers{padding:10px 14px;background:var(--night-red);color:#fff;border:1px solid var(--night-red);box-shadow:0 8px 24px rgba(215,25,36,.2);transition:transform .3s,background .3s,color .3s,box-shadow .3s}
+.night-nav-links .night-nav-offers:after{display:none}
+.night-nav-links .night-nav-offers:hover{background:#fff;color:#090909;box-shadow:0 12px 30px rgba(0,0,0,.28);transform:translateY(-2px)}
 .night-mobile-call{display:none}
 .night-hero-bg{filter:brightness(1.17) contrast(1.03) saturate(.86)}
 .night-hero-shade{background:linear-gradient(180deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,.02) 38%,rgba(0,0,0,.1) 64%,#050505 100%),radial-gradient(circle at 50% 28%,transparent 0 34%,rgba(0,0,0,.23) 82%)}
 .night-hero-logo{mix-blend-mode:normal;filter:drop-shadow(0 8px 30px rgba(0,0,0,.48))}
 .night-hero h1{margin-bottom:20px}
-.night-hero-lede{max-width:610px;margin:0 0 28px;color:rgba(255,255,255,.86);font-size:clamp(15px,1.2vw,18px);line-height:1.5;text-shadow:0 2px 24px #000}
+.night-hero-lede{max-width:820px;margin:0 0 28px;color:rgba(255,255,255,.9);font-size:clamp(18px,1.45vw,26px);line-height:1.45;text-shadow:0 2px 24px #000}
 
 .night-day-services{padding:160px clamp(24px,5vw,90px) 180px;background:#eef1f0;color:#090909}
 .night-day-services-head{width:min(1380px,100%);margin:0 auto 70px;display:grid;grid-template-columns:1.25fr .75fr;gap:9vw;align-items:end}
-.night-day-services-head span,.night-battery-copy>span,.night-story-heading>span,.night-info-head>span,.night-booking-copy>span{display:block;margin-bottom:24px;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase}
+.night-day-services-head span,.night-story-heading>span,.night-info-head>span,.night-booking-copy>span{display:block;margin-bottom:24px;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase}
 .night-day-services-head h2{margin:0;font-size:clamp(4.5rem,7.8vw,8.9rem);font-weight:500;line-height:.76;letter-spacing:-.065em;text-transform:uppercase}
 .night-day-services-head h2 em,.night-info-head h2 em{color:var(--night-red);font-style:normal}
 .night-day-services-head p{max-width:450px;margin:0 0 26px;font-size:17px;line-height:1.55}
 .night-day-services-head a{display:inline-flex;align-items:center;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--night-red);font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase}
-.night-day-service-grid{width:min(1380px,100%);margin:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-flow:dense;border-top:1px solid rgba(0,0,0,.22);border-left:1px solid rgba(0,0,0,.22)}
-.night-day-service-card{min-width:0;min-height:620px;display:grid;grid-template-rows:270px 1fr;border-right:1px solid rgba(0,0,0,.22);border-bottom:1px solid rgba(0,0,0,.22);background:#f8f8f5;overflow:hidden;transition:background .45s,color .45s}
-.night-day-service-card:hover{background:#0a0a0a;color:#fff}
-.night-day-service-media{position:relative;overflow:hidden;background:#aeb8b8}
-.night-day-service-media:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.42))}
-.night-day-service-media img{width:100%;height:100%;object-fit:cover;filter:brightness(1.14) saturate(.8);transition:transform 1s cubic-bezier(.16,1,.3,1),filter .7s}
-.night-day-service-card:hover .night-day-service-media img{transform:scale(1.08);filter:brightness(1.23) saturate(1)}
-.night-day-service-media span{position:absolute;z-index:2;right:24px;bottom:18px;color:#fff;font-family:var(--mono);font-size:10px;letter-spacing:.14em}
-.night-day-service-copy{padding:34px 36px 36px;display:flex;flex-direction:column}
-.night-day-service-copy h3{margin:0 0 16px;font-size:clamp(2.25rem,3.4vw,4rem);font-weight:500;line-height:.88;letter-spacing:-.05em;text-transform:uppercase}
-.night-day-service-copy>p{max-width:540px;margin:0 0 22px;color:#555;font-size:15px;line-height:1.55;transition:color .45s}
-.night-day-service-card:hover .night-day-service-copy>p{color:#b8b8b4}
-.night-day-service-copy ul{margin:0 0 24px;padding:0;display:flex;flex-wrap:wrap;gap:8px 18px;list-style:none}
-.night-day-service-copy li{display:flex;align-items:center;gap:7px;font-size:12px}
-.night-day-service-copy li svg{color:var(--night-red)}
-.night-day-service-copy small{display:block;margin:0 0 22px;padding:13px 0;border-top:1px solid currentColor;color:#696965;font-size:11px;line-height:1.45;opacity:.78}
-.night-day-service-card:hover small{color:#d1d1cc}
-.night-day-service-copy>a{width:max-content;margin-top:auto;display:inline-flex;align-items:center;gap:10px;padding-bottom:6px;border-bottom:1px solid var(--night-red);font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.night-day-service-rail{height:650px}
+.night-day-service-panel{background-position:center;background-size:cover}
+.night-day-service-panel>div{transform:translateY(78px)}
+.night-day-service-panel:hover>div,.night-day-service-panel.active>div{transform:none}
+.night-day-service-panel h3{max-width:360px}
+.night-day-service-panel p{max-width:430px}
+.night-day-service-panel h3,.night-day-service-panel a{color:#fff}
+.night-day-service-panel a{border-bottom-color:#fff}
+.night-day-service-panel a svg{color:var(--night-red)}
+.night-day-service-panel li{display:inline-flex;align-items:center;gap:7px;color:#fff}
+.night-day-service-panel li svg{flex:none;color:var(--night-red)}
+.night-day-service-panel ul{margin:18px 0 0}
+.night-day-service-panel .night-day-service-note{display:block;max-width:470px;margin:18px 0 0;padding:13px 0 0;border-top:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.72);font-size:11px;line-height:1.45;opacity:1}
+.night-day-service-panel .night-day-service-callout{max-width:470px;margin:18px 0 0;padding:13px 0;border-top:1px solid rgba(255,255,255,.25);border-bottom:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.72)}
+.night-day-service-panel:not(.active):not(:hover)>div{position:absolute;inset:50% 24px auto;transform:translateY(-50%)}
+.night-day-service-panel:not(.active):not(:hover)>div>:not(h3){display:none}
+.night-day-service-callout{display:flex;align-items:flex-start;gap:12px;margin:0 0 22px;padding:15px 0;border-top:1px solid rgba(0,0,0,.22);border-bottom:1px solid rgba(0,0,0,.22);color:#555;font-size:13px;line-height:1.45}
+.night-day-service-callout svg{flex:none;color:var(--night-red);margin-top:1px}
+.night-day-service-callout p{margin:0!important;color:inherit!important;font-size:inherit!important;line-height:inherit!important}
+
+.night-day-services-standard{padding:clamp(90px,9vw,150px) clamp(24px,5vw,90px) clamp(110px,12vw,180px);background:var(--night-bone);color:#090909;border-top:1px solid rgba(0,0,0,.22)}
+.night-day-services-standard-inner{width:min(1380px,100%);margin:0 auto;display:block}
+.night-day-services-standard h2{width:100%;max-width:none;margin:0;font-size:clamp(3.5rem,6.3vw,7.4rem);font-weight:500;line-height:.8;letter-spacing:-.065em;text-transform:uppercase}
+.night-day-services-standard h2 span{display:block;white-space:nowrap}
+.night-day-services-standard p{max-width:520px;margin:32px 0 0;color:#555;font-size:16px;line-height:1.55}
 
 .night-repairs{padding-top:160px}
 .night-service-panel{background-image:var(--night-panel-image)}
@@ -258,19 +268,6 @@
 .night-service-panel li{padding:8px 10px;border:1px solid rgba(255,255,255,.28);font-family:var(--mono);font-size:8px;letter-spacing:.08em;text-transform:uppercase}
 .night-service-panel:hover ul,.night-service-panel.active ul{opacity:1}
 .night-service-panel.featured>span:after{content:'Priority';margin-left:12px;padding:5px 7px;background:var(--night-red);color:#fff}
-
-.night-battery-feature{min-height:900px;display:grid;grid-template-columns:1.08fr .92fr;background:#080808}
-.night-battery-image{min-height:720px;overflow:hidden;position:relative}
-.night-battery-image:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,#080808 100%),linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.42))}
-.night-battery-image img{width:100%;height:100%;object-fit:cover;filter:brightness(1.08) saturate(.82);transition:transform 1.2s cubic-bezier(.16,1,.3,1)}
-.night-battery-feature:hover .night-battery-image img{transform:scale(1.035)}
-.night-battery-copy{padding:110px clamp(36px,6vw,110px) 100px 7vw;display:flex;flex-direction:column;justify-content:center}
-.night-battery-copy h2{max-width:730px;margin:0 0 32px;font-size:clamp(4.2rem,6.3vw,7.7rem);font-weight:500;line-height:.78;letter-spacing:-.06em;text-transform:uppercase}
-.night-battery-copy p{max-width:610px;margin:0 0 18px;color:#aaa7a0;font-size:16px;line-height:1.58}
-.night-battery-copy ul{margin:18px 0 20px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.2);border-bottom:1px solid rgba(255,255,255,.2);list-style:none}
-.night-battery-copy li{padding:18px 14px 18px 0;font-family:var(--mono);font-size:9px;line-height:1.5;letter-spacing:.08em;text-transform:uppercase}
-.night-battery-copy small{max-width:610px;color:#78756f;font-size:11px;line-height:1.5}
-.night-battery-copy>div{margin-top:32px;display:flex;gap:10px}
 
 .night-capability{padding:95px clamp(24px,6vw,110px);display:grid;grid-template-columns:minmax(360px,1.2fr) minmax(300px,.8fr);gap:50px 6vw;align-items:center;background:#050505;border-top:1px solid rgba(255,255,255,.14);border-bottom:1px solid rgba(255,255,255,.14)}
 .night-capability>img{width:min(645px,100%);height:auto}
@@ -337,25 +334,19 @@
   .night-nav-links,.night-nav-actions{display:none}
   .night-menu{display:block}
   .night-nav.is-open .night-nav-links{position:absolute;top:78px;left:0;right:0;max-height:calc(100dvh - 78px);padding:24px clamp(24px,4vw,70px) 36px;display:flex;flex-direction:column;gap:0;overflow-y:auto;background:#050505;border-bottom:1px solid rgba(255,255,255,.15)}
-  .night-nav.is-open .night-nav-links a{width:100%;min-height:48px;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.12);font-size:10px}
+  .night-nav.is-open .night-nav-links a{width:100%;min-height:48px;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.12);font-size:13px}
+  .night-nav.is-open .night-nav-links .night-nav-offers{width:max-content;min-height:42px;margin-top:14px;padding:0 16px;border-bottom:1px solid var(--night-red)}
   .night-mobile-call,.night-mobile-book{display:flex!important}
   .night-mobile-call{color:var(--night-red)}
-  .night-day-service-card{min-height:650px}
-  .night-battery-feature{grid-template-columns:.9fr 1.1fr}
-  .night-battery-copy{padding-left:5vw}
 }
 
 @media (max-width:900px){
   .night-day-services{padding:120px 24px 140px}
   .night-day-services-head{grid-template-columns:1fr;gap:36px}
-  .night-day-service-grid{grid-template-columns:1fr}
-  .night-day-service-card{min-height:0;grid-template-columns:.85fr 1.15fr;grid-template-rows:none}
-  .night-day-service-media{min-height:360px}
+  .night-day-service-rail{height:auto}
+  .night-day-service-panel>div{transform:none}
+  .night-day-services-standard p{max-width:520px}
   .night-service-panel ul{opacity:1}
-  .night-battery-feature{grid-template-columns:1fr;min-height:0}
-  .night-battery-image{min-height:520px}
-  .night-battery-image:after{background:linear-gradient(180deg,transparent 45%,#080808 100%)}
-  .night-battery-copy{padding:70px 28px 110px}
   .night-capability{grid-template-columns:1fr}
   .night-capability>img{width:min(645px,100%)}
   .night-capability .night-capability-marquee{margin-top:4px}
@@ -375,24 +366,16 @@
   .night-hero-lede{max-width:330px;margin-bottom:22px;font-size:14px}
   .night-day-services{padding:96px 16px 110px}
   .night-day-services-head{margin-bottom:42px}
-  .night-day-services-head h2{font-size:clamp(3.45rem,16vw,4.8rem)}
+  .night-day-services-head h2{font-size:clamp(3rem,14.2vw,4rem)}
   .night-day-services-head p{font-size:15px}
-  .night-day-service-card{display:block}
-  .night-day-service-media{height:230px;min-height:0}
-  .night-day-service-copy{min-height:370px;padding:26px 22px 28px}
-  .night-day-service-copy h3{font-size:clamp(2.4rem,11.5vw,3.25rem)}
-  .night-day-service-copy ul{display:grid;gap:8px}
+  .night-day-services-standard{padding:96px 16px 110px}
+  .night-day-services-standard h2{font-size:clamp(2.15rem,8.4vw,3.35rem)}
+  .night-day-services-standard p{margin-top:24px;max-width:520px;font-size:14px}
   .night-repairs{padding-top:96px}
   .night-service-panel{min-height:320px}
   .night-service-panel.active,.night-service-panel:hover{min-height:390px}
   .night-service-panel ul{gap:5px}
   .night-service-panel li{font-size:7px}
-  .night-battery-image{min-height:330px}
-  .night-battery-copy{padding:58px 18px 90px}
-  .night-battery-copy h2{font-size:clamp(3.45rem,15vw,4.7rem)}
-  .night-battery-copy ul{grid-template-columns:1fr}
-  .night-battery-copy li{border-bottom:1px solid rgba(255,255,255,.16)}
-  .night-battery-copy>div{flex-direction:column}
   .night-capability{padding:70px 18px}
   .night-capability>img{width:100%}
   .night-capability .night-capability-marquee{width:calc(100% + 36px);margin:2px -18px 0;padding:5px 0;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%)}
@@ -429,10 +412,13 @@
   .night-hero-logo{max-width:360px}
   .night-hero h1{margin:23px 0 16px}
   .night-hero-actions{gap:7px}
-  .night-day-service-copy{min-height:355px}
-  .night-battery-copy p{font-size:14px}
   .night-story-heading>span{margin-bottom:18px}
   .night-booking-copy>span{margin-bottom:18px}
   .night-booking-copy>small{font-size:10px}
   .night-page>.style-switcher{left:14px;right:14px}
 }
+
+/* Keep eyebrow labels consistently legible across every page style. */
+.eyebrow{font-size:11px}
+.signal-catalog-intro>span{font-size:10px}
+.night-day-services-head span,.night-story-heading>span,.night-info-head>span,.night-booking-copy>span{font-size:12px}
