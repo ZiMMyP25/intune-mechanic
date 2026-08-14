@@ -657,10 +657,10 @@ function NightCarServices({ onSelectOffering }) {
         <div>
           <h3>{service.title}</h3>
           <p>{service.summary}</p>
-          <ul>{service.benefits.map((benefit) => <li key={benefit}><Check size={14} />{benefit}</li>)}</ul>
-          {service.callout && <div className="night-day-service-callout"><ShieldCheck size={18} /><p>{service.callout}</p></div>}
-          {service.note && <small className="night-day-service-note">{service.note}</small>}
-          <span className="night-panel-detail-cue">View full breakdown <ArrowDownRight size={16} /></span>
+          <div className="night-panel-actions">
+            <a className="night-panel-book" href="#booking" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>Book now <ArrowDownRight size={16} /></a>
+            <button className="night-panel-more-info" type="button" onClick={(event) => { event.stopPropagation(); onSelectOffering({ ...service, kind: 'Car service' }) }} onKeyDown={(event) => event.stopPropagation()}>More info <ArrowRight size={16} /></button>
+          </div>
         </div>
       </article>)}
     </div>
@@ -673,7 +673,7 @@ function NightCarRepairs({ onSelectOffering }) {
   return <section className="night-services night-repairs" id="car-repairs">
     <div className="night-section-head"><h2>Car repairs.<br /><em>Made mobile.</em></h2><p>Choose a repair category to open the bay. We test, explain and recommend the right next step before work begins.</p></div>
     <div className="night-service-rail">{repairGroups.map((group, index) => <article className={`night-service-panel ${group.featured ? 'featured' : ''} ${group.flipImage ? 'image-flipped' : ''} ${activeRepair === index ? 'active' : ''}`} key={group.title} onMouseEnter={() => setActiveRepair(index)} onFocus={() => setActiveRepair(index)} onClick={() => { setActiveRepair(index); onSelectOffering({ ...group, kind: 'Car repair' }) }} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveRepair(index); onSelectOffering({ ...group, kind: 'Car repair' }) } }} tabIndex="0" role="button" aria-haspopup="dialog" aria-label={`View ${group.title} details`} style={{ '--night-panel-image': group.flipImage ? 'none' : `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.9)), url(${group.image})`, '--night-flipped-image': `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.9)), url(${group.image})` }}>
-      {group.flipImage ? <i className="night-service-panel-image" aria-hidden="true" /> : null}<span>{group.number}</span><div><h3>{group.title}</h3><p>{group.summary}</p><ul>{group.items.map((item) => <li key={item}>{item}</li>)}</ul><span className="night-panel-detail-cue">View full breakdown <ArrowRight size={16} /></span></div>
+      {group.flipImage ? <i className="night-service-panel-image" aria-hidden="true" /> : null}<span>{group.number}</span><div><h3>{group.title}</h3><p>{group.summary}</p><div className="night-panel-actions"><a className="night-panel-book" href="#booking" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>Book now <ArrowRight size={16} /></a><button className="night-panel-more-info" type="button" onClick={(event) => { event.stopPropagation(); onSelectOffering({ ...group, kind: 'Car repair' }) }} onKeyDown={(event) => event.stopPropagation()}>More info <ArrowRight size={16} /></button></div></div>
     </article>)}</div>
   </section>
 }
