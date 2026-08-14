@@ -15,6 +15,7 @@ import {
   Menu,
   Phone,
   ShieldCheck,
+  Star,
   X,
 } from 'lucide-react'
 
@@ -102,6 +103,7 @@ const repairGroups = [
     title: 'Stopping & control',
     summary: 'Safety-critical systems inspected and repaired with a focus on predictable, confident road behaviour.',
     image: '/assets/service-brakes-complete.png',
+    flipImage: true,
     items: ['Brakes', 'Suspension', 'Steering Repair'],
   },
   {
@@ -151,7 +153,7 @@ const bookingServiceOptions = [
   'After-hours call-out',
 ]
 
-const vehicleFamilies = ['European', 'Japanese', 'American', 'Chinese', 'Hybrid', 'Other makes & models']
+const capabilityCarouselItems = [0, 1, 2, 3]
 
 const signalServiceGroups = [
   { title: 'Mechanical repairs', items: ['All mechanical repairs', 'Overheating problems'] },
@@ -564,12 +566,84 @@ function NightCapabilityStatement() {
   return <section className="night-day-services-standard" aria-labelledby="night-capability-heading">
     <div className="night-day-services-standard-inner">
       <h2 id="night-capability-heading"><span>All makes. All models</span><span>One standard</span></h2>
-      <p>Servicing and repairs for all makes and models—including European, Japanese, American, Chinese and hybrid vehicles.</p>
+      <p>Servicing and repairs for all makes and models.</p>
     </div>
   </section>
 }
 
-function NightCarServices() {
+function NightOfferingModal({ offering, onClose }) {
+  const modalRef = useRef(null)
+  const closingRef = useRef(false)
+  const offeringPoints = offering.benefits || offering.items
+  const notice = offering.callout || offering.note || 'The exact scope, parts and pricing are confirmed after inspection and before approved work begins.'
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onClose()
+    }
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [onClose])
+
+  useGSAP(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.timeline({ defaults: { ease: 'power4.out' } })
+      .fromTo(modalRef.current, { opacity: 0 }, { opacity: 1, duration: .35 })
+      .fromTo('.night-offering-card', { y: 70, scale: .86, rotationY: -22, opacity: 0 }, { y: 0, scale: 1, rotationY: 0, opacity: 1, duration: .8 }, 0)
+      .fromTo('.night-offering-image', { scale: 1.18 }, { scale: 1, duration: 1.1 }, .08)
+      .fromTo('.night-offering-media img', { filter: 'grayscale(1) brightness(.55)' }, { filter: 'grayscale(.15) brightness(.82)', duration: 1.1 }, .08)
+      .from('.night-offering-content > *', { y: 22, opacity: 0, stagger: .055, duration: .55 }, .22)
+  }, { scope: modalRef })
+
+  const closeModal = () => {
+    if (closingRef.current) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      onClose()
+      return
+    }
+    closingRef.current = true
+    const select = gsap.utils.selector(modalRef)
+    gsap.timeline({ onComplete: onClose })
+      .to(select('.night-offering-card'), { y: 32, scale: .92, rotationY: 12, opacity: 0, duration: .42, ease: 'power3.in' })
+      .to(modalRef.current, { opacity: 0, duration: .28, ease: 'power2.in' }, '-=.24')
+  }
+
+  return <div className="night-offering-modal" ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="night-offering-title" onMouseDown={(event) => { if (event.target === event.currentTarget) closeModal() }}>
+    <article className="night-offering-card">
+      <button className="night-offering-close" type="button" onClick={closeModal} aria-label="Close" autoFocus><X size={21} /></button>
+      <div className={`night-offering-media ${offering.flipImage ? 'is-flipped' : ''}`}>
+        <div className="night-offering-image"><img src={offering.image} alt={`${offering.title} mobile mechanic service`} /></div>
+        <div><span>{offering.kind}</span><strong>At home.<br />At work.<br />On your terms.</strong></div>
+      </div>
+      <div className="night-offering-content">
+        <span className="night-offering-eyebrow">{offering.kind} breakdown</span>
+        <h2 id="night-offering-title">{offering.title}</h2>
+        <p className="night-offering-summary">{offering.summary}</p>
+        <div className="night-offering-details">
+          <section className="night-offering-inclusions" aria-labelledby="night-offering-inclusions-heading">
+            <h3 id="night-offering-inclusions-heading">What’s included</h3>
+            <ul>{offeringPoints.map((point) => <li key={point}><Check size={17} /> <span>{point}</span></li>)}</ul>
+          </section>
+          <section className="night-offering-process" aria-labelledby="night-offering-process-heading">
+            <h3 id="night-offering-process-heading">How the visit works</h3>
+            <div><strong>Assess on-site</strong><p>We inspect the vehicle, confirm the symptoms and establish the right scope.</p></div>
+            <div><strong>Explain the findings</strong><p>You receive clear advice, priorities and approval-ready options before work proceeds.</p></div>
+            <div><strong>Complete with care</strong><p>Approved work is completed professionally, followed by final checks and a clear handover.</p></div>
+          </section>
+        </div>
+        <aside><ShieldCheck size={19} /><p>{notice}</p></aside>
+        <div className="night-offering-actions"><a href="#booking" onClick={onClose}>Request this service <ArrowRight size={18} /></a><a href={BUSINESS.phoneHref}>Call {BUSINESS.phoneDisplay}</a></div>
+      </div>
+    </article>
+  </div>
+}
+
+function NightCarServices({ onSelectOffering }) {
   const [activeService, setActiveService] = useState(0)
 
   return <section className="night-day-services" id="car-services">
@@ -578,7 +652,7 @@ function NightCarServices() {
       <div><p>Professional servicing and inspections at home or work, with direct communication and no waiting room.</p><a href={BUSINESS.phoneHref}>Talk through your service <ArrowRight size={16} /></a></div>
     </div>
     <div className="night-service-rail night-day-service-rail">
-      {carServices.map((service, index) => <article className={`night-service-panel night-day-service-panel ${activeService === index ? 'active' : ''}`} id={`service-${service.slug}`} key={service.slug} onMouseEnter={() => setActiveService(index)} onFocus={() => setActiveService(index)} onClick={() => setActiveService(index)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveService(index) } }} tabIndex="0" style={{ '--night-panel-image': `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.9)), url(${service.image})` }}>
+      {carServices.map((service, index) => <article className={`night-service-panel night-day-service-panel ${activeService === index ? 'active' : ''}`} id={`service-${service.slug}`} key={service.slug} onMouseEnter={() => setActiveService(index)} onFocus={() => setActiveService(index)} onClick={() => { setActiveService(index); onSelectOffering({ ...service, kind: 'Car service' }) }} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveService(index); onSelectOffering({ ...service, kind: 'Car service' }) } }} tabIndex="0" role="button" aria-haspopup="dialog" aria-label={`View ${service.title} details`} style={{ '--night-panel-image': `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.9)), url(${service.image})` }}>
         <span>{service.number}</span>
         <div>
           <h3>{service.title}</h3>
@@ -586,20 +660,20 @@ function NightCarServices() {
           <ul>{service.benefits.map((benefit) => <li key={benefit}><Check size={14} />{benefit}</li>)}</ul>
           {service.callout && <div className="night-day-service-callout"><ShieldCheck size={18} /><p>{service.callout}</p></div>}
           {service.note && <small className="night-day-service-note">{service.note}</small>}
-          <a href="#booking">Book this service <ArrowDownRight size={16} /></a>
+          <span className="night-panel-detail-cue">View full breakdown <ArrowDownRight size={16} /></span>
         </div>
       </article>)}
     </div>
   </section>
 }
 
-function NightCarRepairs() {
+function NightCarRepairs({ onSelectOffering }) {
   const [activeRepair, setActiveRepair] = useState(1)
 
   return <section className="night-services night-repairs" id="car-repairs">
     <div className="night-section-head"><h2>Car repairs.<br /><em>Made mobile.</em></h2><p>Choose a repair category to open the bay. We test, explain and recommend the right next step before work begins.</p></div>
-    <div className="night-service-rail">{repairGroups.map((group, index) => <article className={`night-service-panel ${group.featured ? 'featured' : ''} ${activeRepair === index ? 'active' : ''}`} key={group.title} onMouseEnter={() => setActiveRepair(index)} onFocus={() => setActiveRepair(index)} onClick={() => setActiveRepair(index)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveRepair(index) } }} tabIndex="0" style={{ '--night-panel-image': `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.9)), url(${group.image})` }}>
-      <span>{group.number}</span><div><h3>{group.title}</h3><p>{group.summary}</p><ul>{group.items.map((item) => <li key={item}>{item}</li>)}</ul><a href="#booking">Request a repair <ArrowRight size={16} /></a></div>
+    <div className="night-service-rail">{repairGroups.map((group, index) => <article className={`night-service-panel ${group.featured ? 'featured' : ''} ${group.flipImage ? 'image-flipped' : ''} ${activeRepair === index ? 'active' : ''}`} key={group.title} onMouseEnter={() => setActiveRepair(index)} onFocus={() => setActiveRepair(index)} onClick={() => { setActiveRepair(index); onSelectOffering({ ...group, kind: 'Car repair' }) }} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveRepair(index); onSelectOffering({ ...group, kind: 'Car repair' }) } }} tabIndex="0" role="button" aria-haspopup="dialog" aria-label={`View ${group.title} details`} style={{ '--night-panel-image': group.flipImage ? 'none' : `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.9)), url(${group.image})`, '--night-flipped-image': `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.9)), url(${group.image})` }}>
+      {group.flipImage ? <i className="night-service-panel-image" aria-hidden="true" /> : null}<span>{group.number}</span><div><h3>{group.title}</h3><p>{group.summary}</p><ul>{group.items.map((item) => <li key={item}>{item}</li>)}</ul><span className="night-panel-detail-cue">View full breakdown <ArrowRight size={16} /></span></div>
     </article>)}</div>
   </section>
 }
@@ -628,9 +702,10 @@ function NightCapabilityStrip() {
     gsap.to(marqueeTween.current, { timeScale, duration: .7, ease: 'power3.out', overwrite: true })
   }
 
-  return <section className="night-capability" aria-label="Vehicle makes and models serviced">
-    <img src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" loading="lazy" />
-    <div><span>All makes. All models. One standard.</span><p>Servicing and repairs for all makes and models—including European, Japanese, American, Chinese and hybrid vehicles.</p></div>
+  return <section className="night-capability" aria-labelledby="night-capability-carousel-heading">
+    <div className="night-capability-intro">
+      <h2 id="night-capability-carousel-heading">All makes.<br /><em>All models.</em></h2>
+    </div>
     <div
       className="night-capability-marquee"
       ref={marqueeRef}
@@ -640,9 +715,8 @@ function NightCapabilityStrip() {
     >
       <div className="night-capability-track">
         {[0, 1].map((loop) => <ul className="night-capability-group" key={loop} aria-hidden={loop === 1}>
-          {vehicleFamilies.map((family, index) => <li className="night-capability-item" key={`${loop}-${family}`}>
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            {family}
+          {capabilityCarouselItems.map((item) => <li className="night-capability-item" key={`${loop}-${item}`}>
+            <span aria-hidden="true" />Servicing and repairs for all makes and models
           </li>)}
         </ul>)}
       </div>
@@ -725,6 +799,7 @@ function NightShiftPage({ theme, setTheme }) {
   const [day, setDay] = useState(initialNightBookingDay)
   const [time, setTime] = useState(appointmentTimes[1])
   const [sent, setSent] = useState(false)
+  const [selectedOffering, setSelectedOffering] = useState(null)
   const manifesto = 'Professional car care should move around your life, not force your life to move around it.'
 
   useEffect(() => {
@@ -747,7 +822,7 @@ function NightShiftPage({ theme, setTheme }) {
     gsap.to('.night-hero-bg', { scale: 1.1, yPercent: 7, ease: 'none', scrollTrigger: { id: 'night-hero-parallax', trigger: '.night-hero', start: 'top top', end: 'bottom top', scrub: 1 } })
     gsap.from('.night-repairs .night-service-panel', { y: 110, rotationX: -10, stagger: .12, scrollTrigger: { id: 'night-services-in', trigger: '.night-repairs .night-service-rail', start: 'top 84%', end: 'top 48%', scrub: 1 } })
     gsap.to('.night-manifesto span', { opacity: 1, stagger: .08, scrollTrigger: { id: 'night-words', trigger: '.night-manifesto', start: 'top 78%', end: 'bottom 38%', scrub: 1 } })
-    nightMedia.add('(min-width: 901px)', () => ScrollTrigger.create({ id: 'night-story-pin', trigger: '.night-story', start: 'top 90px', end: 'bottom bottom', pin: '.night-story-heading', pinSpacing: false }))
+    nightMedia.add('(min-width: 901px) and (min-height: 800px)', () => ScrollTrigger.create({ id: 'night-story-pin', trigger: '.night-story', start: 'top 90px', end: 'bottom bottom', pin: '.night-story-heading', pinSpacing: false }))
     gsap.utils.toArray('.night-stack-card').forEach((card, index) => gsap.from(card, { y: 170, scale: .86, opacity: .25, rotation: index % 2 ? 3 : -3, scrollTrigger: { id: `night-stack-${index}`, trigger: card, start: 'top 93%', end: 'top 58%', scrub: 1 } }))
     gsap.from('.night-review-inner', { y: 90, opacity: 0, scrollTrigger: { id: 'night-review', trigger: '.night-review', start: 'top 80%', end: 'top 48%', scrub: 1 } })
     gsap.from('.night-info-row', { y: 55, opacity: 0, stagger: .08, scrollTrigger: { id: 'night-info-in', trigger: '.night-info-list', start: 'top 86%', end: 'top 45%', scrub: 1 } })
@@ -772,14 +847,15 @@ function NightShiftPage({ theme, setTheme }) {
     </header>
 
     <NightCapabilityStatement />
-    <NightCarServices />
-    <NightCarRepairs />
+    <NightCarServices onSelectOffering={setSelectedOffering} />
+    <NightCapabilityStrip />
+    <NightCarRepairs onSelectOffering={setSelectedOffering} />
 
     <section className="night-manifesto-wrap"><p className="night-manifesto">{manifesto.split(' ').map((word, index) => <span key={`${word}-${index}`}>{word} </span>)}</p></section>
 
     <NightAbout />
 
-    <section className="night-review" id="night-reviews"><div className="night-review-inner"><div className="night-review-nav"><span>Client notes</span><div><button onClick={() => setReviewIndex((reviewIndex + reviews.length - 1) % reviews.length)} aria-label="Previous review"><ArrowLeft size={18} /></button><button onClick={() => setReviewIndex((reviewIndex + 1) % reviews.length)} aria-label="Next review"><ArrowRight size={18} /></button></div></div><blockquote>“{reviews[reviewIndex].quote}”</blockquote><p>{reviews[reviewIndex].name} <span>{reviews[reviewIndex].vehicle}</span></p></div></section>
+    <section className="night-review" id="night-reviews"><div className="night-review-inner"><div className="night-review-nav"><span>Client notes</span><div><button onClick={() => setReviewIndex((reviewIndex + reviews.length - 1) % reviews.length)} aria-label="Previous review"><ArrowLeft size={18} /></button><button onClick={() => setReviewIndex((reviewIndex + 1) % reviews.length)} aria-label="Next review"><ArrowRight size={18} /></button></div></div><blockquote>“{reviews[reviewIndex].quote}”</blockquote><p>{reviews[reviewIndex].name} <span className="night-review-vehicle" aria-label={`${reviews[reviewIndex].vehicle}, 5 star review`}>{reviews[reviewIndex].vehicle}{Array.from({ length: 5 }, (_, index) => <Star key={index} aria-hidden="true" />)}</span></p></div></section>
 
     <NightInfoCentre />
 
@@ -791,6 +867,7 @@ function NightShiftPage({ theme, setTheme }) {
 
     <footer className="night-footer"><img src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" /><div><a href="#car-services">Car Services</a><a href="#car-repairs">Car Repairs</a><a href="#about">About Us</a><a href="#info-centre">Info Centre</a><a href="#contact">Contact</a></div><p>{BUSINESS.name} · {BUSINESS.licence} · <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a> · <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p></footer>
     <a className="night-sticky-call" href={BUSINESS.phoneHref}><Phone size={18} /><span>Call now</span><strong>{BUSINESS.phoneDisplay}</strong></a>
+    {selectedOffering ? <NightOfferingModal offering={selectedOffering} onClose={() => setSelectedOffering(null)} /> : null}
   </main>
 }
 
