@@ -551,24 +551,15 @@ function NightNavigation() {
     ['Car Repairs', '#car-repairs'],
     ['About Us', '#about'],
     ['FAQ', '#info-centre'],
-    ['Contact', '#contact'],
+    ['Book Online', '#booking'],
     ['Offers', '#contact'],
   ]
 
   return <nav className={`night-nav ${open ? 'is-open' : ''}`}>
-    <div className="night-nav-links">{links.map(([label, href]) => <a className={label === 'Offers' ? 'night-nav-offers' : undefined} href={href} onClick={close} key={label}>{label}</a>)}<a className="night-mobile-call" href={BUSINESS.phoneHref} onClick={close}>Call now · {BUSINESS.phoneDisplay}</a><a className="night-mobile-book" href="#booking" onClick={close}>Book service</a></div>
-    <div className="night-nav-actions"><a className="night-nav-call" href={BUSINESS.phoneHref}><Phone size={14} /> Call now</a><a href="#booking">Book service</a></div>
+    <div className="night-nav-links">{links.map(([label, href]) => <a className={label === 'Offers' ? 'night-nav-offers' : undefined} href={href} onClick={close} key={label}>{label}</a>)}<a className="night-mobile-call" href={BUSINESS.phoneHref} onClick={close}>Call now · {BUSINESS.phoneDisplay}</a></div>
+    <div className="night-nav-actions"><a className="night-nav-call" href={BUSINESS.phoneHref}><Phone size={14} /> Call now</a></div>
     <button className="night-menu" onClick={() => setOpen(!open)} aria-label="Toggle Night Shift navigation" aria-expanded={open}>{open ? <X size={22} /> : <Menu size={22} />}</button>
   </nav>
-}
-
-function NightCapabilityStatement() {
-  return <section className="night-day-services-standard" aria-labelledby="night-capability-heading">
-    <div className="night-day-services-standard-inner">
-      <h2 id="night-capability-heading"><span>All makes. All models</span><span>One standard</span></h2>
-      <p>Servicing and repairs for all makes and models.</p>
-    </div>
-  </section>
 }
 
 function NightOfferingModal({ offering, onClose }) {
@@ -846,7 +837,6 @@ function NightShiftPage({ theme, setTheme }) {
       <a className="night-scroll-cue" href="#car-services">Explore our work <ChevronDown size={16} /></a>
     </header>
 
-    <NightCapabilityStatement />
     <NightCarServices onSelectOffering={setSelectedOffering} />
     <NightCapabilityStrip />
     <NightCarRepairs onSelectOffering={setSelectedOffering} />
@@ -865,7 +855,7 @@ function NightShiftPage({ theme, setTheme }) {
       {sent ? <div className="night-booking-success"><Check size={34} /><h3>Request received.</h3><p>We’ll be in touch to confirm {nightBookingDateLabel(day)} at {time}.</p><button onClick={() => setSent(false)}>Make another request</button></div> : <form className="night-booking-form" onSubmit={(event) => { event.preventDefault(); setSent(true) }}><div className="night-field-grid"><label>Name<input required name="name" autoComplete="name" placeholder="Full name" /></label><label>Phone<input required name="phone" type="tel" autoComplete="tel" placeholder="Mobile number" /></label><label>Email<input required name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label><label>Vehicle<input required name="vehicle" placeholder="Make, model, year" /></label><label className="night-field-wide">Service or repair<select name="service" defaultValue=""><option value="" disabled>Select service or repair</option>{bookingServiceOptions.map((option) => <option key={option}>{option}</option>)}</select></label></div><input type="hidden" name="preferred-date" value={day} /><input type="hidden" name="preferred-time" value={time} /><NightDatePicker selectedDay={day} onDayChange={setDay} /><div className="night-picker times"><span>Preferred time</span><div>{appointmentTimes.map((item) => <button type="button" className={time === item ? 'selected' : ''} key={item} onClick={() => setTime(item)}>{item}</button>)}</div></div><button className="night-submit" type="submit" disabled={!day}>Request the visit <ArrowRight size={18} /></button></form>}
     </section>
 
-    <footer className="night-footer"><img src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" /><div><a href="#car-services">Car Services</a><a href="#car-repairs">Car Repairs</a><a href="#about">About Us</a><a href="#info-centre">Info Centre</a><a href="#contact">Contact</a></div><p>{BUSINESS.name} · {BUSINESS.licence} · <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a> · <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p></footer>
+    <footer className="night-footer"><img src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" /><div><a href="#car-services">Car Services</a><a href="#car-repairs">Car Repairs</a><a href="#about">About Us</a><a href="#info-centre">FAQ</a><a href="#booking">Book Online</a></div><p>{BUSINESS.name} · {BUSINESS.licence} · <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a> · <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p></footer>
     <a className="night-sticky-call" href={BUSINESS.phoneHref}><Phone size={18} /><span>Call now</span><strong>{BUSINESS.phoneDisplay}</strong></a>
     {selectedOffering ? <NightOfferingModal offering={selectedOffering} onClose={() => setSelectedOffering(null)} /> : null}
   </main>
