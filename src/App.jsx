@@ -149,7 +149,7 @@ const infoTopics = [
 
 const bookingServiceOptions = [
   ...carServices.map((service) => service.title),
-  ...repairGroups.flatMap((group) => group.items),
+  ...repairGroups.flatMap((group) => group.items).filter((option) => !['Registration / relearning where required', 'Correct battery specification'].includes(option)),
   'After-hours call-out',
 ]
 
@@ -165,12 +165,6 @@ const signalServiceGroups = [
 ]
 
 const signalMarqueeServices = signalServiceGroups.flatMap(({ title, items }) => [title, ...items])
-
-const pageStyles = [
-  { id: 'atelier', name: 'In-House Atelier', note: 'New premium direction' },
-  { id: 'signal', name: 'Signal Red', note: 'High-contrast workshop' },
-  { id: 'night', name: 'Night Shift', note: 'Cinematic after-dark' },
-]
 
 const appointmentDays = [
   { label: 'Thu', date: '06 Aug', value: '2026-08-06' },
@@ -285,31 +279,6 @@ function Navigation() {
         </button>
       </div>
     </nav>
-  )
-}
-
-function StyleSwitcher({ theme, setTheme }) {
-  const [open, setOpen] = useState(false)
-  const current = pageStyles.find((style) => style.id === theme) || pageStyles[0]
-
-  return (
-    <div className={`style-switcher ${open ? 'is-open' : ''}`}>
-      <button className="style-trigger" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="Choose page style">
-        <span className="style-trigger-dot" />
-        <span><small>Page style</small><strong>{current.name}</strong></span>
-        <span className="style-count">{pageStyles.findIndex((style) => style.id === current.id) + 1}/{pageStyles.length}</span>
-        <ChevronDown size={15} />
-      </button>
-      <div className="style-options" role="menu">
-        {pageStyles.map((style, index) => (
-          <button key={style.id} className={current.id === style.id ? 'selected' : ''} onClick={() => { setTheme(style.id); setOpen(false) }} role="menuitem">
-            <span className="style-number">0{index + 1}</span>
-            <span><strong>{style.name}</strong><small>{style.note}</small></span>
-            {current.id === style.id && <Check size={15} />}
-          </button>
-        ))}
-      </div>
-    </div>
   )
 }
 
@@ -497,7 +466,6 @@ function SignalRedPage({ theme, setTheme }) {
 
   return <main className="signal-page" ref={signalScope}>
     <SignalNavigation />
-    <StyleSwitcher theme={theme} setTheme={setTheme} />
     <header className="signal-hero" id="top">
       <div className="signal-hero-copy"><h1>Precision<br />servicing.<br /><em>Wherever<br />you park.</em></h1><p>Premium mobile maintenance and diagnostics, brought to your driveway.</p><div><a className="signal-button" href="#booking">Book a service</a><a className="signal-button outline" href="mailto:inhousemobilemechanics@gmail.com">Ask Peter</a></div></div>
       <div className="signal-hero-image" aria-label="Mobile mechanic servicing a vehicle" />
@@ -728,7 +696,7 @@ function NightAbout() {
 function NightInfoCentre() {
   return <section className="night-info" id="info-centre">
     <div className="night-info-head"><span>Frequently Asked Questions</span><h2>Know your car.<br /><em>Choose with confidence.</em></h2><p>Clear automotive guidance, built to help you understand maintenance, warning signs and what good service should include.</p></div>
-    <div className="night-info-list">{infoTopics.map((topic, index) => <article className="night-info-row" id={`info-${topic.slug}`} key={topic.slug}><span>{String(index + 1).padStart(2, '0')}</span><h3>{topic.title}</h3><p>{topic.copy}</p><a href="#contact" aria-label={`Ask us about ${topic.title}`}>Ask us <ArrowRight size={15} /></a></article>)}</div>
+     <div className="night-info-list">{infoTopics.map((topic, index) => <article className="night-info-row" id={`info-${topic.slug}`} key={topic.slug}><span>{String(index + 1).padStart(2, '0')}</span><h3>{topic.title}</h3><p>{topic.copy}</p><a href="#contact" aria-label={`Ask us about ${topic.title}`}>Ask us <ArrowRight size={16} /></a></article>)}</div>
   </section>
 }
 
@@ -782,7 +750,7 @@ function NightDatePicker({ selectedDay, onDayChange }) {
   </div>
 }
 
-function NightShiftPage({ theme, setTheme }) {
+function NightShiftPage() {
   const nightScope = useRef(null)
   const spotlightRef = useRef(null)
   const [reviewIndex, setReviewIndex] = useState(0)
@@ -822,7 +790,6 @@ function NightShiftPage({ theme, setTheme }) {
   return <main className="night-page" ref={nightScope}>
     <div className="night-spotlight" ref={spotlightRef} aria-hidden="true" />
     <NightNavigation />
-    <StyleSwitcher theme={theme} setTheme={setTheme} />
 
     <header className="night-hero" id="night-top">
       <div className="night-hero-bg" aria-hidden="true" />
@@ -831,7 +798,7 @@ function NightShiftPage({ theme, setTheme }) {
         <img className="night-hero-logo" src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" />
         <h1>Your workshop.<br />Wherever you stop.</h1>
         <p className="night-hero-lede">Professional mobile servicing and repairs for all makes and models. We come to your home or workplace.</p>
-        <div className="night-hero-actions"><a className="night-button red" href={BUSINESS.phoneHref}><Phone size={17} /> Call now</a><a className="night-button outline" href="#booking">Book a service <ArrowDownRight size={18} /></a></div>
+        <div className="night-hero-actions"><a className="night-button red" href={BUSINESS.phoneHref}><Phone size={17} /> Call now</a><a className="night-button outline" href="#booking">Book Online <ArrowDownRight size={18} /></a></div>
       </div>
       <a className="night-scroll-cue" href="#car-services">Explore our work <ChevronDown size={16} /></a>
     </header>
@@ -851,52 +818,15 @@ function NightShiftPage({ theme, setTheme }) {
     <section className="night-booking" id="contact">
       <span className="night-booking-anchor" id="booking" aria-hidden="true" />
       <div className="night-booking-copy"><span>Contact In-House</span><h2>Make the<br />workshop come<br />to you.</h2><p>Choose a preferred day and time. We’ll confirm availability, access and what your vehicle needs.</p><div className="night-contact-links"><a href={BUSINESS.phoneHref}><Phone size={16} /> {BUSINESS.phoneDisplay}</a><a href={`mailto:${BUSINESS.email}`}><Mail size={16} /> Email us</a></div><small>After-hours call-outs may be available by arrangement. Additional charges may apply; availability and conditions are confirmed before attendance.</small></div>
-      {sent ? <div className="night-booking-success"><Check size={34} /><h3>Request received.</h3><p>We’ll be in touch to confirm {nightBookingDateLabel(day)} at {time}.</p><button onClick={() => setSent(false)}>Make another request</button></div> : <form className="night-booking-form" onSubmit={(event) => { event.preventDefault(); setSent(true) }}><div className="night-field-grid"><label>Name<input required name="name" autoComplete="name" placeholder="Full name" /></label><label>Phone<input required name="phone" type="tel" autoComplete="tel" placeholder="Mobile number" /></label><label>Email<input required name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label><label>Vehicle<input required name="vehicle" placeholder="Make, model, year" /></label><label className="night-field-wide">Service or repair<select name="service" defaultValue=""><option value="" disabled>Select service or repair</option>{bookingServiceOptions.map((option) => <option key={option}>{option}</option>)}</select></label></div><input type="hidden" name="preferred-date" value={day} /><input type="hidden" name="preferred-time" value={time} /><NightDatePicker selectedDay={day} onDayChange={setDay} /><div className="night-picker times"><span>Preferred time</span><div>{appointmentTimes.map((item) => <button type="button" className={time === item ? 'selected' : ''} key={item} onClick={() => setTime(item)}>{item}</button>)}</div></div><button className="night-submit" type="submit" disabled={!day}>Request the visit <ArrowRight size={18} /></button></form>}
+       {sent ? <div className="night-booking-success"><Check size={34} /><h3>Request received.</h3><p>We’ll be in touch to confirm {nightBookingDateLabel(day)} at {time}.</p><button onClick={() => setSent(false)}>Make another request</button></div> : <form className="night-booking-form" onSubmit={(event) => { event.preventDefault(); setSent(true) }}><div className="night-field-grid"><label>Name<input required name="name" autoComplete="name" placeholder="Full name" /></label><label>Phone<input required name="phone" type="tel" autoComplete="tel" placeholder="Mobile number" /></label><label>Email<input required name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label><label>Vehicle<input required name="vehicle" placeholder="Make, model, year" /></label><label>Service or repair<select name="service" defaultValue=""><option value="" disabled>Select service or repair</option>{bookingServiceOptions.map((option) => <option key={option}>{option}</option>)}</select></label><label>Vehicle Registration<input name="vehicle-registration" placeholder="Registration number" /></label></div><input type="hidden" name="preferred-date" value={day} /><input type="hidden" name="preferred-time" value={time} /><NightDatePicker selectedDay={day} onDayChange={setDay} /><div className="night-picker times"><span>Preferred time</span><div>{appointmentTimes.map((item) => <button type="button" className={time === item ? 'selected' : ''} key={item} onClick={() => setTime(item)}>{item}</button>)}</div></div><button className="night-submit" type="submit" disabled={!day}>Request the visit <ArrowRight size={18} /></button></form>}
     </section>
 
     <footer className="night-footer"><img src="/assets/inhouse-logo-transparent.png" alt="In-House Mobile Mechanics" /><div><a href="#car-services">Car Services</a><a href="#car-repairs">Car Repairs</a><a href="#about">About Us</a><a href="#info-centre">FAQ</a><a href="#booking">Book Online</a></div><p>{BUSINESS.name} · {BUSINESS.licence} · <a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a> · <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p></footer>
-    <a className="night-sticky-call" href={BUSINESS.phoneHref}><Phone size={18} /><span>Call now</span><strong>{BUSINESS.phoneDisplay}</strong></a>
+     <a className="night-sticky-call" href={BUSINESS.phoneHref}><Phone size={18} /><span>Call now</span><strong>After hours available</strong></a>
     {selectedOffering ? <NightOfferingModal offering={selectedOffering} onClose={() => setSelectedOffering(null)} /> : null}
   </main>
 }
 
 export default function App() {
-  const scope = useRef(null)
-  const [theme, setTheme] = useState(() => {
-    const savedTheme = window.localStorage.getItem('inhouse-page-style')
-    return pageStyles.some((style) => style.id === savedTheme) ? savedTheme : 'night'
-  })
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme
-    window.localStorage.setItem('inhouse-page-style', theme)
-    if (theme === 'signal' || theme === 'night') ScrollTrigger.getAll().filter((trigger) => !String(trigger.vars.id || '').startsWith(`${theme}-`)).forEach((trigger) => trigger.kill())
-    ScrollTrigger.refresh()
-  }, [theme])
-
-  useGSAP(() => {
-    if (theme === 'signal' || theme === 'night') return
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduceMotion) return
-
-    const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
-    intro.from('.navigation', { y: -30, opacity: 0, duration: 0.8 })
-      .from('.hero-content > *', { y: 32, opacity: 0, duration: 0.9, stagger: 0.1 }, '-=0.35')
-      .from('.hero-media-wrap', { clipPath: 'inset(0 0 0 100%)', duration: 1.3 }, '-=0.75')
-
-    gsap.utils.toArray('.service-bento > *').forEach((card, index) => {
-      gsap.from(card, { y: 70 + index * 12, opacity: 0, scale: 0.94, scrollTrigger: { trigger: card, start: 'top 88%', end: 'top 54%', scrub: 1 } })
-    })
-    gsap.from('.standard-pin', { y: 80, opacity: 0, scrollTrigger: { trigger: '.standard-section', start: 'top 78%', end: 'top 32%', scrub: 1 } })
-    gsap.utils.toArray('.proof-card').forEach((card, index) => {
-      gsap.from(card, { y: 110 + index * 18, scale: 0.84, opacity: 0.2, scrollTrigger: { trigger: card, start: 'top 92%', end: 'top 55%', scrub: 1 } })
-    })
-    gsap.to('.word-reveal span', { opacity: 1, stagger: 0.07, scrollTrigger: { trigger: '.word-reveal', start: 'top 82%', end: 'bottom 48%', scrub: 1 } })
-    gsap.from('.review-stage', { y: 80, opacity: 0, scrollTrigger: { trigger: '.reviews', start: 'top 78%', end: 'top 42%', scrub: 1 } })
-    gsap.to('.hero-media', { yPercent: 9, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } })
-  }, { scope, dependencies: [theme], revertOnUpdate: true })
-
-  if (theme === 'signal') return <SignalRedPage theme={theme} setTheme={setTheme} />
-  if (theme === 'night') return <NightShiftPage theme={theme} setTheme={setTheme} />
-  return <main className="site" ref={scope}><Navigation /><StyleSwitcher theme={theme} setTheme={setTheme} /><Hero /><ServiceBento /><StandardSection /><Reviews /><Booking /><Footer /></main>
+  return <NightShiftPage />
 }
