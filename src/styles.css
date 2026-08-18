@@ -430,6 +430,8 @@
 .night-stack-card>span{font-size:11px}
 .night-stack-card.bone>span{margin-top:18px}
 .night-stack-card>a{font-size:11px;margin-top:12px}
+@keyframes nightReviewCopyIn{from{opacity:0}to{opacity:1}}
+.night-review blockquote{animation:nightReviewCopyIn .45s ease both}
 .night-footer>div{font-size:11px}
 .night-footer p{font-size:11px}
 .night-booking-form label,.night-picker>span,.night-calendar-head>span{font-size:10px}
@@ -446,6 +448,7 @@
 @media (max-width:620px){.night-story-heading p{font-size:15px}}
 @media (max-width:620px){.night-info-head p{font-size:15px}}
 @media (max-width:620px){.night-booking-copy p,.night-contact-links a{font-size:15px}}
+@media (max-width:620px){.night-stack-card>strong{overflow-wrap:anywhere}}
 
 /* Preserve the manifesto's warm field while adding subtle human context. */
 .night-manifesto-wrap{place-items:center start;padding:170px clamp(24px,8vw,140px)}
