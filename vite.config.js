@@ -1,7 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { enquiry } from './worker/index.js'
 
 const devEvents = []
+const devOwnerPassword = process.env.OWNER_ANALYTICS_PASSWORD || ''
 
 function readBody(request) {
   return new Promise((resolve, reject) => {
@@ -51,14 +53,37 @@ function analyticsDevApi() {
       server.middlewares.use(async (request, response, next) => {
         const url = new URL(request.url, 'http://localhost')
         if (!url.pathname.startsWith('/api/')) return next()
+        if (url.pathname === '/api/enquiry') {
+          if (request.method !== 'POST') return send(response, 405, { error: 'Method not allowed' }, { allow: 'POST' })
+          try {
+            const body = await readBody(request)
+            const enquiryRequest = new Request(url, {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+                ...(typeof request.headers.origin === 'string' ? { origin: request.headers.origin } : {}),
+                ...(typeof request.headers['cf-connecting-ip'] === 'string' ? { 'CF-Connecting-IP': request.headers['cf-connecting-ip'] } : {}),
+              },
+              body: JSON.stringify(body),
+            })
+            const result = await enquiry(enquiryRequest, { RESEND_API_KEY: process.env.RESEND_API_KEY || '', RESEND_FROM: process.env.RESEND_FROM || '' })
+            response.writeHead(result.status, Object.fromEntries(result.headers.entries()))
+            response.end(await result.text())
+          } catch { send(response, 400, { error: 'Invalid request' }) }
+          return
+        }
         if (url.pathname === '/api/analytics/event' && request.method === 'POST') {
-          try { devEvents.push(await readBody(request)); send(response, 204, null) } catch { send(response, 400, { error: 'Invalid event' }) }
+          try {
+            if (devEvents.length >= 5000) devEvents.shift()
+            devEvents.push(await readBody(request))
+            send(response, 204, null)
+          } catch { send(response, 400, { error: 'Invalid event' }) }
           return
         }
         if (url.pathname === '/api/owner/login' && request.method === 'POST') {
           try {
             const body = await readBody(request)
-            if (body.password !== 'V3gipwfzu') return send(response, 401, { error: 'Invalid credentials' })
+            if (!devOwnerPassword || body.password !== devOwnerPassword) return send(response, 401, { error: 'Invalid credentials' })
             return send(response, 200, { ok: true }, { 'set-cookie': 'ihmm_owner=dev-owner; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800' })
           } catch { return send(response, 400, { error: 'Invalid request' }) }
         }

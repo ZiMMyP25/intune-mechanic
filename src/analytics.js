@@ -10,7 +10,7 @@ function deviceType() {
 }
 
 function eventDetails(element) {
-  const link = element.closest('a, button')
+  const link = element?.closest?.('a, button')
   if (!link) return null
   const href = link.getAttribute('href') || ''
   const label = (link.getAttribute('aria-label') || link.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 100)
@@ -24,8 +24,7 @@ function eventDetails(element) {
 
 function send(payload) {
   const body = JSON.stringify(payload)
-  if (navigator.sendBeacon) {
-    navigator.sendBeacon(endpoint, new Blob([body], { type: 'application/json' }))
+  if (navigator.sendBeacon && navigator.sendBeacon(endpoint, new Blob([body], { type: 'application/json' }))) {
     return
   }
   fetch(endpoint, { method: 'POST', headers: { 'content-type': 'application/json' }, body, keepalive: true }).catch(() => {})
@@ -35,8 +34,13 @@ export function AnalyticsTracker() {
   useEffect(() => {
     if (window.location.pathname === '/owner-insights' || navigator.doNotTrack === '1') return undefined
 
-    const sessionId = sessionStorage.getItem('ihmm-analytics-session') || crypto.randomUUID()
-    sessionStorage.setItem('ihmm-analytics-session', sessionId)
+    let sessionId
+    try {
+      sessionId = sessionStorage.getItem('ihmm-analytics-session') || crypto.randomUUID()
+      sessionStorage.setItem('ihmm-analytics-session', sessionId)
+    } catch {
+      sessionId = crypto.randomUUID()
+    }
     const base = { sessionId, path: window.location.pathname, device: deviceType(), referrer: document.referrer }
     if (!recordedPageLoad) {
       send({ ...base, type: 'page_view' })
@@ -44,14 +48,14 @@ export function AnalyticsTracker() {
     }
 
     const seenSections = new Set()
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting || entry.intersectionRatio < .35 || seenSections.has(entry.target.id)) return
-        seenSections.add(entry.target.id)
-        send({ ...base, type: 'section_view', section: entry.target.id })
-      })
-    }, { threshold: [.35] })
-    document.querySelectorAll('main section[id], main header[id]').forEach((section) => observer.observe(section))
+    const observer = typeof IntersectionObserver === 'function' ? new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || entry.intersectionRatio < .35 || seenSections.has(entry.target.id)) return
+          seenSections.add(entry.target.id)
+          send({ ...base, type: 'section_view', section: entry.target.id })
+        })
+      }, { threshold: [.35] }) : null
+    document.querySelectorAll('main section[id], main header[id]').forEach((section) => observer?.observe(section))
 
     const click = (event) => {
       const details = eventDetails(event.target)
@@ -62,18 +66,12 @@ export function AnalyticsTracker() {
       send({ ...base, type: 'booking_start', target: 'booking-form', label: 'Booking form started' })
       document.removeEventListener('focusin', focus)
     }
-    const submit = (event) => {
-      if (event.target.matches('form')) send({ ...base, type: 'booking_submit', target: 'booking-form', label: 'Booking request submitted' })
-    }
-
     document.addEventListener('click', click)
     document.addEventListener('focusin', focus)
-    document.addEventListener('submit', submit, true)
     return () => {
-      observer.disconnect()
+      observer?.disconnect()
       document.removeEventListener('click', click)
       document.removeEventListener('focusin', focus)
-      document.removeEventListener('submit', submit, true)
     }
   }, [])
 

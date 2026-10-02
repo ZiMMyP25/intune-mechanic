@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Activity, ArrowDown, ArrowUp, BarChart3, CalendarDays, Eye, LogOut, MousePointerClick, RefreshCw, ShieldCheck, Smartphone, Target } from 'lucide-react'
 import './owner-insights.css'
 
@@ -28,7 +28,8 @@ function Login({ onSuccess }) {
     setError('')
     try {
       const response = await fetch('/api/owner/login', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password }) })
-      if (!response.ok) throw new Error('The password was not recognised.')
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(result.error || 'The password was not recognised.')
       onSuccess()
     } catch (reason) {
       setError(reason.message)
@@ -60,13 +61,17 @@ function Metric({ label, value, sub, icon: Icon }) {
 
 function TrendChart({ daily }) {
   const points = useMemo(() => {
-    const values = daily.map((item) => item.visits)
+    const values = daily.flatMap((item) => [item.visits, item.conversions])
     const max = Math.max(...values, 1)
-    return daily.map((item, index) => `${daily.length === 1 ? 50 : index * (100 / (daily.length - 1))},${92 - (item.visits / max) * 78}`).join(' ')
+    const x = (_, index) => daily.length === 1 ? 50 : index * (100 / (daily.length - 1))
+    return {
+      visits: daily.map((item, index) => `${x(item, index)},${92 - (item.visits / max) * 78}`).join(' '),
+      conversions: daily.map((item, index) => `${x(item, index)},${92 - (item.conversions / max) * 78}`).join(' '),
+    }
   }, [daily])
   return <section className="owner-panel owner-trend">
     <div className="owner-panel-head"><div><span>Performance</span><h2>Visits & conversions</h2></div><div className="owner-key"><i /> Visits <i className="red" /> Requests</div></div>
-    {daily.length ? <div className="owner-chart-wrap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Website visits over time"><g className="owner-chart-grid">{[20,40,60,80].map((y) => <line x1="0" y1={y} x2="100" y2={y} key={y} />)}</g><polyline points={points} /></svg><div className="owner-chart-labels">{daily.filter((_, i) => i % Math.max(1, Math.ceil(daily.length / 6)) === 0).map((item) => <span key={item.date}>{item.label}</span>)}</div></div> : <Empty label="Visits will appear after the first tracked session." />}
+    {daily.length ? <div className="owner-chart-wrap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Website visits and booking requests over time"><g className="owner-chart-grid">{[20,40,60,80].map((y) => <line x1="0" y1={y} x2="100" y2={y} key={y} />)}</g><polyline points={points.visits} /><polyline className="red" points={points.conversions} /></svg><div className="owner-chart-labels">{daily.filter((_, i) => i % Math.max(1, Math.ceil(daily.length / 6)) === 0).map((item) => <span key={item.date}>{item.label}</span>)}</div></div> : <Empty label="Visits will appear after the first tracked session." />}
   </section>
 }
 
@@ -79,8 +84,9 @@ function Ranking({ title, eyebrow, rows, type }) {
 }
 
 function Breakdown({ data }) {
-  const total = data.reduce((sum, item) => sum + item.count, 0) || 1
-  return <section className="owner-panel owner-breakdown"><div className="owner-panel-head"><div><span>Audience</span><h2>Device mix</h2></div></div><div className="owner-donut" style={{ '--mobile': `${((data.find((x) => x.name === 'mobile')?.count || 0) / total) * 360}deg`, '--tablet': `${(((data.find((x) => x.name === 'mobile')?.count || 0) + (data.find((x) => x.name === 'tablet')?.count || 0)) / total) * 360}deg` }}><strong>{number(total)}</strong><span>visits</span></div><ul>{data.map((item) => <li key={item.name}><span>{item.name}</span><strong>{percent(item.count / total * 100)}</strong></li>)}</ul></section>
+  const displayTotal = data.reduce((sum, item) => sum + item.count, 0)
+  const total = displayTotal || 1
+  return <section className="owner-panel owner-breakdown"><div className="owner-panel-head"><div><span>Audience</span><h2>Device mix</h2></div></div><div className="owner-donut" style={{ '--mobile': `${((data.find((x) => x.name === 'mobile')?.count || 0) / total) * 360}deg`, '--tablet': `${(((data.find((x) => x.name === 'mobile')?.count || 0) + (data.find((x) => x.name === 'tablet')?.count || 0)) / total) * 360}deg` }}><strong>{number(displayTotal)}</strong><span>visits</span></div><ul>{data.map((item) => <li key={item.name}><span>{item.name}</span><strong>{percent(item.count / total * 100)}</strong></li>)}</ul></section>
 }
 
 function Signals({ data }) {
@@ -96,6 +102,8 @@ export default function OwnerInsights() {
   const [loading, setLoading] = useState(true)
   const [range, setRange] = useState(30)
   const [data, setData] = useState(emptyData)
+  const [error, setError] = useState('')
+  const requestRef = useRef(null)
 
   useEffect(() => {
     document.title = 'Owner Insights | In-House Mobile Mechanics'
@@ -104,17 +112,31 @@ export default function OwnerInsights() {
   }, [])
 
   const load = async () => {
+    requestRef.current?.abort()
+    const controller = new AbortController()
+    requestRef.current = controller
     setLoading(true)
+    setError('')
     try {
-      const response = await fetch(`/api/owner/analytics?days=${range}`, { credentials: 'same-origin' })
+      const response = await fetch(`/api/owner/analytics?days=${range}`, { credentials: 'same-origin', signal: controller.signal })
       if (response.status === 401) { setAuthenticated(false); return }
       if (!response.ok) throw new Error('Analytics could not be loaded.')
       setData(await response.json())
       setAuthenticated(true)
-    } finally { setLoading(false) }
+    } catch (reason) {
+      if (reason?.name !== 'AbortError') setError(reason?.message || 'Analytics could not be loaded.')
+    } finally {
+      if (requestRef.current === controller) {
+        requestRef.current = null
+        setLoading(false)
+      }
+    }
   }
   useEffect(() => { load() }, [range])
-  const logout = async () => { await fetch('/api/owner/logout', { method: 'POST', credentials: 'same-origin' }); setAuthenticated(false) }
+  const logout = async () => {
+    requestRef.current?.abort()
+    try { await fetch('/api/owner/logout', { method: 'POST', credentials: 'same-origin' }) } catch { /* The local session is cleared even if the request fails. */ } finally { setAuthenticated(false) }
+  }
   if (!authenticated && !loading) return <Login onSuccess={load} />
   if (!authenticated) return <main className="owner-loading">Loading private reporting…</main>
 
@@ -122,9 +144,10 @@ export default function OwnerInsights() {
   const startToSubmit = data.totals.bookingStarts ? data.totals.conversions / data.totals.bookingStarts * 100 : 0
   return <main className="owner-dashboard">
     <aside><div className="owner-brand"><BarChart3 /><span>In-House<br />Owner reporting</span></div><nav><a className="active" href="#overview"><Eye /> Overview</a><a href="#engagement"><MousePointerClick /> Engagement</a><a href="#signals"><Target /> Business signals</a></nav><div className="owner-privacy"><ShieldCheck /><span>Anonymous analytics only</span></div></aside>
-    <div className="owner-main">
-      <header><div><span>Private dashboard</span><h1>Owner Insights</h1></div><div className="owner-controls"><label><CalendarDays /><select value={range} onChange={(event) => setRange(Number(event.target.value))}><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option></select></label><button onClick={load} aria-label="Refresh analytics"><RefreshCw /></button><button className="signout" onClick={logout}><LogOut /> Sign out</button></div></header>
-      {!data.configured && <div className="owner-notice">Analytics storage is not configured on this deployment. Add the D1 binding to start collecting durable data.</div>}
+      <div className="owner-main">
+       <header><div><span>Private dashboard</span><h1>Owner Insights</h1></div><div className="owner-controls"><label><CalendarDays /><select value={range} onChange={(event) => setRange(Number(event.target.value))}><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option></select></label><button onClick={load} aria-label="Refresh analytics"><RefreshCw /></button><button className="signout" onClick={logout}><LogOut /> Sign out</button></div></header>
+       {!data.configured && <div className="owner-notice">Analytics storage is not configured on this deployment. Add the D1 binding to start collecting durable data.</div>}
+       {error && <div className="owner-notice owner-error" role="alert">{error} <button onClick={load}>Try again</button></div>}
       <section className="owner-metrics" id="overview"><Metric label="Visits" value={number(data.totals.visits)} sub={`Last ${range} days`} icon={Eye} /><Metric label="Booking intent" value={number(data.totals.bookingStarts)} sub={`${percent(visitToStart)} of visits`} icon={MousePointerClick} /><Metric label="Confirmed requests" value={number(data.totals.conversions)} sub={`${percent(startToSubmit)} of form starts`} icon={Target} /><Metric label="Tracked clicks" value={number(data.totals.clicks)} sub="Calls, bookings & navigation" icon={Activity} /></section>
       <div className="owner-grid" id="engagement"><TrendChart daily={data.daily} /><section className="owner-panel owner-funnel"><div className="owner-panel-head"><div><span>Journey</span><h2>Conversion funnel</h2></div></div><div className="owner-funnel-steps"><div><span>Website visits</span><strong>{number(data.totals.visits)}</strong><em>100%</em></div><div><span>Booking form started</span><strong>{number(data.totals.bookingStarts)}</strong><em>{percent(visitToStart)}</em></div><div><span>Request submitted</span><strong>{number(data.totals.conversions)}</strong><em>{percent(data.totals.visits ? data.totals.conversions / data.totals.visits * 100 : 0)}</em></div></div></section><Ranking title="Section engagement" eyebrow="What people explore" rows={data.sections} type="section" /><Ranking title="Top actions" eyebrow="What people click" rows={data.actions} /><section className="owner-panel owner-sources"><div className="owner-panel-head"><div><span>Acquisition</span><h2>Traffic sources</h2></div></div>{data.sources.length ? <table><thead><tr><th>Source</th><th>Visits</th><th>Share</th></tr></thead><tbody>{data.sources.map((item) => <tr key={item.name}><td>{item.name}</td><td>{number(item.count)}</td><td>{percent(item.share)}</td></tr>)}</tbody></table> : <Empty label="Traffic sources will appear after visits arrive." />}</section><Breakdown data={data.devices} /></div>
       <div id="signals"><Signals data={data} /></div>

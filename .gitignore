@@ -1,5 +1,8 @@
 node_modules/
 dist/
 *.log
+*.cpuprofile
 .env
 .env.*
+.dev.vars
+.wrangler/

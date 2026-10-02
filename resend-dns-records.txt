@@ -1,0 +1,26 @@
+Resend sending DNS records for inhousemobilemechanics.com.au
+Source: signed-in Resend domain setup, 17 September 2026.
+
+Please add these records to the existing authoritative DNS zone:
+
+Type: TXT
+Name: resend._domainkey
+Value: p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDpN5hdY8YRSVvqebna2D+Wktuif+kno72J+68y0rpcOWrxuEPJAYOiuz2sPnZGEfCSvqFSQQPBOAGmAY5mkGEQGnJ1+SzCFiXISfqI/V90z288ggV8y1C5fyFMC//xIcajXM/HdSRK9UaF5RekIf7GqvaksB9wsLjYpEcjV/sdMwIDAQAB
+TTL: default
+
+Type: CNAME
+Name: rsend
+Value: rsend-apne1.forge.rmta.net
+TTL: default
+
+Type: CNAME
+Name: send
+Value: send.forge.rmta.net
+TTL: default
+
+Preserve existing website records, nameservers, MX records and DMARC policy.
+Inbound email routing to Resend is not required: the website will send enquiry
+notifications through Resend to inhousemobilemechanics@gmail.com.
+
+After publication, verify the domain in Resend. These are public DNS values,
+not API credentials.

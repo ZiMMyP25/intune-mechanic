@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "inhouse-mechanic",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-08-22",
+  "account_id": "15dfcaab44fa24abd32030c52425caa1",
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.01
+    }
+  },
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/owner-insights", "/owner-insights/*"]
+  }
+}
